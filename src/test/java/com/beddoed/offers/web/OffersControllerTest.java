@@ -238,6 +238,32 @@ public class OffersControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    public void shouldReturnInternalServerErrorIfExceptionInService() throws Exception {
+        // Given
+        final String year = "2018";
+        final String month = "03";
+        final String dayOfMonth = "02";
+        final String isoFormatExpiryDate = StringUtils.join(Arrays.array(year, month, dayOfMonth), "-");
+        final String description = "Some description";
+        final String currencyCode = "GBP";
+        final BigDecimal amount = BigDecimal.valueOf(20.00).setScale(2, ROUND_HALF_UP);
+        final boolean active = new Random().nextBoolean();
+        final UUID merchantId = UUID.randomUUID();
+        final Merchant merchant = new Merchant(merchantId);
+        final Product product = new Product(merchant);
+
+        given(offerService.createOffer(any(Offer.class))).willThrow(new RuntimeException("Some exception!"));
+        given(merchandiseService.getMerchandiseById(merchandiseId)).willReturn(product);
+        final String jsonRequest = getJsonRequest(isoFormatExpiryDate, description, currencyCode, amount, active);
+
+        // When / Then
+        mvc.perform(put(CREATE_URI_TEMPLATE, merchandiseId)
+                .content(jsonRequest)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+    }
+
     private String getJsonRequest(String expiryDate, String description, String currencyCode, BigDecimal amount, boolean active) {
         final OfferRequest offerRequest = new OfferRequest(expiryDate, description, currencyCode, amount, active);
         return new GsonBuilder().create().toJson(offerRequest);
