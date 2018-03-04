@@ -6,47 +6,40 @@ import com.beddoed.offers.model.Offer;
 import com.beddoed.offers.model.Product;
 import com.beddoed.offers.service.MerchandiseService;
 import com.beddoed.offers.service.OfferService;
-import com.beddoed.offers.utils.TestUtils;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Arrays;
-import org.hibernate.validator.internal.util.CollectionHelper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.GsonBuilderUtils;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 import static com.beddoed.offers.builders.OfferBuilder.offerBuilder;
 import static com.beddoed.offers.builders.PriceBuilder.priceBuilder;
 import static com.beddoed.offers.utils.TestUtils.randomOneOf;
+import static com.beddoed.offers.web.OfferRequestDataFactory.toJson;
 import static java.math.BigDecimal.ROUND_HALF_UP;
 import static java.util.Currency.getInstance;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest
@@ -100,7 +93,7 @@ public class OffersControllerTest {
 
         given(offerService.createOffer(expectedOffer)).willReturn(offerId);
         given(merchandiseService.getMerchandiseById(merchandiseId)).willReturn(product);
-        final String jsonRequest = getJsonRequest(isoFormatExpiryDate, description, currencyCode, amount, active);
+        final String jsonRequest = toJson(isoFormatExpiryDate, description, currencyCode, amount, active);
 
         // When / Then
         mvc.perform(put(CREATE_URI_TEMPLATE, merchandiseId)
@@ -142,7 +135,7 @@ public class OffersControllerTest {
         // When / Then
         mvc.perform(put(CREATE_URI_TEMPLATE, merchandiseId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(getJsonRequest("2018-03-02", "Something", invalidCurrency, BigDecimal.valueOf(0.5), false)))
+                .content(toJson("2018-03-02", "Something", invalidCurrency, BigDecimal.valueOf(0.5), false)))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().json(expectedApiErrorResponseJson));
     }
@@ -158,7 +151,7 @@ public class OffersControllerTest {
         // When / Then
         mvc.perform(put(CREATE_URI_TEMPLATE, merchandiseId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(getJsonRequest(null, "Something", "GBP", BigDecimal.valueOf(0.5), false)))
+                .content(toJson(null, "Something", "GBP", BigDecimal.valueOf(0.5), false)))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().json(expectedApiErrorResponseJson));
     }
@@ -174,7 +167,7 @@ public class OffersControllerTest {
         // When / Then
         mvc.perform(put(CREATE_URI_TEMPLATE, merchandiseId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(getJsonRequest("2018-03-02", "", "GBP", BigDecimal.valueOf(0.5), false)))
+                .content(toJson("2018-03-02", "", "GBP", BigDecimal.valueOf(0.5), false)))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().json(expectedApiErrorResponseJson));
     }
@@ -190,7 +183,7 @@ public class OffersControllerTest {
         // When / Then
         mvc.perform(put(CREATE_URI_TEMPLATE, merchandiseId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(getJsonRequest("2018-03-02", "Something", "GBP", null, false)))
+                .content(toJson("2018-03-02", "Something", "GBP", null, false)))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().json(expectedApiErrorResponseJson));
     }
@@ -206,7 +199,7 @@ public class OffersControllerTest {
         // When / Then
         mvc.perform(put(CREATE_URI_TEMPLATE, merchandiseId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(getJsonRequest("2018-03-02", "Something", "GBP", BigDecimal.valueOf(-1.0), false)))
+                .content(toJson("2018-03-02", "Something", "GBP", BigDecimal.valueOf(-1.0), false)))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().json(expectedApiErrorResponseJson));
     }
@@ -221,7 +214,7 @@ public class OffersControllerTest {
         // When / Then
         mvc.perform(put(CREATE_URI_TEMPLATE, merchandiseId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(getJsonRequest("2018-03-02", "Something", "GBP", BigDecimal.valueOf(0), false)))
+                .content(toJson("2018-03-02", "Something", "GBP", BigDecimal.valueOf(0), false)))
                 .andExpect(status().isCreated())
                 .andExpect(header().string(LOCATION, equalTo("/merchandise/" + merchandiseId + "/offer/" + offerId)));
 
@@ -255,54 +248,13 @@ public class OffersControllerTest {
 
         given(offerService.createOffer(any(Offer.class))).willThrow(new RuntimeException("Some exception!"));
         given(merchandiseService.getMerchandiseById(merchandiseId)).willReturn(product);
-        final String jsonRequest = getJsonRequest(isoFormatExpiryDate, description, currencyCode, amount, active);
+        final String jsonRequest = toJson(isoFormatExpiryDate, description, currencyCode, amount, active);
 
         // When / Then
         mvc.perform(put(CREATE_URI_TEMPLATE, merchandiseId)
                 .content(jsonRequest)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());
-    }
-
-    private String getJsonRequest(String expiryDate, String description, String currencyCode, BigDecimal amount, boolean active) {
-        final OfferRequest offerRequest = new OfferRequest(expiryDate, description, currencyCode, amount, active);
-        return new GsonBuilder().create().toJson(offerRequest);
-    }
-
-    private class OfferRequest {
-        private final String expiryDate;
-        private final String description;
-        private final String currencyCode;
-        private final BigDecimal priceAmount;
-        private final boolean active;
-
-        public OfferRequest(String expiryDate, String description, String currencyCode, BigDecimal priceAmount, boolean active) {
-            this.expiryDate = expiryDate;
-            this.description = description;
-            this.currencyCode = currencyCode;
-            this.priceAmount = priceAmount;
-            this.active = active;
-        }
-
-        public String getExpiryDate() {
-            return expiryDate;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public String getCurrencyCode() {
-            return currencyCode;
-        }
-
-        public BigDecimal getPriceAmount() {
-            return priceAmount;
-        }
-
-        public boolean isActive() {
-            return active;
-        }
     }
 
     private class ApiErrorResponse {
