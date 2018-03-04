@@ -1,17 +1,31 @@
 package com.beddoed.offers.web;
 
 import lombok.ToString;
+import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @ToString
 public class OfferResource {
 
+    @NotNull(message = "Expiry date cannot be null")
     private LocalDate expiryDate;
+
+    @NotEmpty(message = "Description cannot be empty")
     private String description;
+
+    @ValidCurrency
     private String currencyCode;
+
+    @NotNull(message = "Price amount cannot be null")
+    @DecimalMin(value = "0", message = "Price amount must be a positive number")
     private BigDecimal priceAmount;
+
     private boolean active;
 
     public LocalDate getExpiryDate() {

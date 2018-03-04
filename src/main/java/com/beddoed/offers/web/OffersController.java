@@ -7,14 +7,16 @@ import com.beddoed.offers.service.OfferService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriTemplate;
 
+import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.beddoed.offers.web.OfferTransformer.transformResource;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -38,27 +40,26 @@ public class OffersController {
     }
 
     @RequestMapping(path = CREATE_OFFER_URI, method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createOffer(@PathVariable("merchandiseId") final UUID merchandiseId, @RequestBody final OfferResource offerResource) {
+    public ResponseEntity<String> createOffer(@PathVariable("merchandiseId") final UUID merchandiseId, @Valid @RequestBody final OfferResource offerResource) {
         LOGGER.info("Received request to create offer: {}", offerResource);
-        validate(offerResource);
-
         final Merchandise merchandise = merchandiseService.getMerchandiseById(merchandiseId);
         final Offer offer = transformResource(offerResource, merchandise);
         UUID offerId = offerService.createOffer(offer);
         return created(getOfferURI(merchandiseId, offerId)).build();
     }
 
-
-    @ExceptionHandler(value = IllegalStateException.class)
-    @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
-    public void handleException(IllegalStateException e) {
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiError> handleUnprocessableEntity(MethodArgumentNotValidException e) {
+        final List<org.springframework.validation.FieldError> allErrors = e.getBindingResult().getFieldErrors();
+        final List<FieldError> fieldErrors = allErrors.stream()
+                .map(this::toFieldError)
+                .collect(Collectors.toList());
         LOGGER.warn("Unprocessable entity!", e);
+        return ResponseEntity.unprocessableEntity().body(new ApiError(fieldErrors));
     }
 
-    private void validate(OfferResource offerResource) {
-        if (offerResource.getCurrencyCode() == null) {
-            throw new IllegalArgumentException("Currency Code cannot be null");
-        }
+    private FieldError toFieldError(org.springframework.validation.FieldError error) {
+        return new FieldError(error.getField(), error.getCode(), error.getDefaultMessage());
     }
 
     private URI getOfferURI(final UUID merchandiseId, final UUID offerId) {
