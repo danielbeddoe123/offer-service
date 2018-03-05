@@ -40,7 +40,6 @@ public class MerchandiseRepositoryIntegrationTest {
         final String currencyCode = "GBP";
         final Merchandise expectedMerchandise = new Merchandise(merchandiseId, product, merchant);
 
-        jdbcUtils.insertCurrency(currencyCode);
         jdbcUtils.insertMerchant(merchantId);
         jdbcUtils.insertMerchandise(merchantId, merchandiseId, product);
 

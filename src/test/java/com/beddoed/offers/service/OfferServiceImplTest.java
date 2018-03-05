@@ -93,7 +93,7 @@ public class OfferServiceImplTest {
 
     private Offer getExpectedOffer(String description, boolean active, UUID merchantId, UUID merchandiseId, String currencyCode, BigDecimal amount) {
         return new Offer(description, new Merchandise(merchandiseId, MerchandiseType.PRODUCT, new com.beddoed.offers.data.Merchant(merchantId)),
-                new com.beddoed.offers.data.Currency(currencyCode), amount, active);
+                currencyCode, amount, active);
     }
 
 }

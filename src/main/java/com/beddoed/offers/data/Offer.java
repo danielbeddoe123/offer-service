@@ -2,6 +2,7 @@ package com.beddoed.offers.data;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -24,17 +25,16 @@ public class Offer {
     @ManyToOne
     private Merchandise merchandise;
 
-    @ManyToOne
-    private Currency currency;
+    private String currencyCode;
 
     private BigDecimal price;
 
     private Boolean active;
 
-    public Offer(String description, Merchandise merchandise, Currency currency, BigDecimal price, Boolean active) {
+    public Offer(String description, Merchandise merchandise, String currencyCode, BigDecimal price, Boolean active) {
         this.description = description;
         this.merchandise = merchandise;
-        this.currency = currency;
+        this.currencyCode = currencyCode;
         this.price = price;
         this.active = active;
     }
@@ -71,12 +71,12 @@ public class Offer {
         this.merchandise = merchandise;
     }
 
-    public Currency getCurrency() {
-        return currency;
+    public String getCurrencyCode() {
+        return currencyCode;
     }
 
-    public void setCurrency(Currency currency) {
-        this.currency = currency;
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
     }
 
     public BigDecimal getPrice() {

@@ -19,6 +19,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
 import java.util.Optional;
@@ -33,7 +34,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT, classes = Application.class)
-//@Sql(scripts = "classpath:data-load.sql")
 public class OffersSingleServiceTest {
 
     @Autowired
@@ -65,25 +65,22 @@ public class OffersSingleServiceTest {
         final RequestEntity<String> requestEntity = RequestEntity.put(URI.create(offerUri))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(offerRequestJson);
-
-        final UUID offerId = UUID.randomUUID();
-//        given(offerService.createOffer(any(Offer.class))).willReturn(offerId);
-        given(merchandiseService.getMerchandiseById(merchandiseId)).willReturn(merchandiseBuilder().buildProduct());
-
-        assertThat(jdbcUtils.countOffers(Optional.empty())).isEqualTo(0);
+        given(merchandiseService.getMerchandiseById(merchandiseId)).willReturn(merchandiseBuilder().merchandiseId(merchandiseId).buildProduct());
+        assertThat(jdbcUtils.countOffers()).isEqualTo(0);
 
         // When
         final ResponseEntity<Void> exchange = restTemplate.exchange(requestEntity, Void.class);
 
         // Then
-        assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(exchange.getHeaders().getLocation().getPath()).isEqualTo(offerUri + "/" + offerId);
+        assertThat(jdbcUtils.countOffers()).isEqualTo(1);
+        final UUID createdOfferId = jdbcUtils.getOfferId();
 
-        assertThat(jdbcUtils.countOffers(Optional.of(offerId))).isEqualTo(1);
+        assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(exchange.getHeaders().getLocation().getPath()).isEqualTo(offerUri + "/" + createdOfferId);
+
     }
 
     private void setupData() {
-        jdbcUtils.insertCurrency("GBP");
         final UUID merchantId = UUID.randomUUID();
         jdbcUtils.insertMerchant(merchantId);
         jdbcUtils.insertMerchandise(merchantId, merchandiseId, MerchandiseType.PRODUCT);

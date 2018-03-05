@@ -29,8 +29,8 @@ public class OfferServiceImpl implements OfferService {
         final com.beddoed.offers.model.Merchandise merchandise = offer.getMerchandise();
         final Merchant merchant = new Merchant(merchandise.getMerchant().getMerchantId());
         final Merchandise merchandiseData = new Merchandise(merchandise.getMerchandiseId(), getType(merchandise), merchant);
-        final Currency currency = new Currency(offer.getPrice().getCurrency().getCurrencyCode());
-        return new com.beddoed.offers.data.Offer(offer.getDescription(), merchandiseData, currency, offer.getPrice().getAmount(), offer.getActive());
+        final String currencyCode = offer.getPrice().getCurrency().getCurrencyCode();
+        return new com.beddoed.offers.data.Offer(offer.getDescription(), merchandiseData, currencyCode, offer.getPrice().getAmount(), offer.getActive());
     }
 
     private MerchandiseType getType(com.beddoed.offers.model.Merchandise merchandise) {

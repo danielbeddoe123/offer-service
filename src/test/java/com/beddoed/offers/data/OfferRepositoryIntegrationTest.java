@@ -43,11 +43,10 @@ public class OfferRepositoryIntegrationTest {
         final String currencyCode = "GBP";
         final BigDecimal price = BigDecimal.TEN.setScale(2, RoundingMode.HALF_UP);
 
-        jdbcUtils.insertCurrency(currencyCode);
         jdbcUtils.insertMerchant(merchantId);
         jdbcUtils.insertMerchandise(merchantId, merchandiseId, product);
 
-        final Offer offer = new Offer("test", merchandise, new Currency(currencyCode), price, true);
+        final Offer offer = new Offer("test", merchandise, currencyCode, price, true);
 
         // When
         Offer savedOffer = offerRepository.save(offer);
@@ -71,12 +70,11 @@ public class OfferRepositoryIntegrationTest {
         final BigDecimal price = BigDecimal.TEN.setScale(2, RoundingMode.HALF_UP);
         final BigDecimal price2 = BigDecimal.valueOf(20.00).setScale(2, RoundingMode.HALF_UP);
 
-        jdbcUtils.insertCurrency(currencyCode);
         jdbcUtils.insertMerchant(merchantId);
         jdbcUtils.insertMerchandise(merchantId, merchandiseId, product);
 
-        final Offer offer1 = new Offer("test", merchandise, new Currency(currencyCode), price, true);
-        final Offer offer2 = new Offer("test2", merchandise, new Currency(currencyCode), price2, true);
+        final Offer offer1 = new Offer("test", merchandise, currencyCode, price, true);
+        final Offer offer2 = new Offer("test2", merchandise, currencyCode, price2, true);
 
         // When
         Offer savedOffer1 = offerRepository.save(offer1);
