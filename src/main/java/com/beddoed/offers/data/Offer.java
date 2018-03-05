@@ -1,17 +1,19 @@
 package com.beddoed.offers.data;
 
-import com.beddoed.offers.model.Price;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
 @EqualsAndHashCode
-public class OfferDTO {
+@ToString
+public class Offer {
 
     @Id
     @GeneratedValue
@@ -19,21 +21,20 @@ public class OfferDTO {
 
     private String description;
 
-    private MerchandiseDTO merchandiseDTO;
-    private Price price;
+    @ManyToOne
+    private Merchandise merchandise;
+
+    @ManyToOne
+    private Currency currency;
+
+    private BigDecimal price;
+
     private Boolean active;
 
-    public OfferDTO(UUID offerId, String description, Boolean active) {
-        this.offerId = offerId;
+    public Offer(String description, Merchandise merchandise, Currency currency, BigDecimal price, Boolean active) {
         this.description = description;
-        this.merchandiseDTO = merchandiseDTO;
-        this.price = price;
-        this.active = active;
-    }
-
-    public OfferDTO(String description, MerchandiseDTO merchandiseDTO, Price price, Boolean active) {
-        this.description = description;
-        this.merchandiseDTO = merchandiseDTO;
+        this.merchandise = merchandise;
+        this.currency = currency;
         this.price = price;
         this.active = active;
     }
@@ -62,19 +63,27 @@ public class OfferDTO {
         this.active = active;
     }
 
-    public MerchandiseDTO getMerchandiseDTO() {
-        return merchandiseDTO;
+    public Merchandise getMerchandise() {
+        return merchandise;
     }
 
-    public void setMerchandiseDTO(MerchandiseDTO merchandiseDTO) {
-        this.merchandiseDTO = merchandiseDTO;
+    public void setMerchandise(Merchandise merchandise) {
+        this.merchandise = merchandise;
     }
 
-    public Price getPrice() {
+    public Currency getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
+    }
+
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Price price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
@@ -82,6 +91,6 @@ public class OfferDTO {
      * For framework use only
      */
     @Deprecated
-    OfferDTO() {
+    Offer() {
     }
 }

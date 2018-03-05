@@ -1,18 +1,23 @@
 package com.beddoed.offers.data;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.UUID;
 
 @Entity
-public class MerchantDTO {
+@EqualsAndHashCode
+@ToString
+public class Merchant {
 
     @Id
     @GeneratedValue
     private UUID merchantId;
 
-    public MerchantDTO(UUID merchantId) {
+    public Merchant(UUID merchantId) {
         this.merchantId = merchantId;
     }
 
@@ -28,6 +33,6 @@ public class MerchantDTO {
      * For framework use only
      */
     @Deprecated
-    MerchantDTO() {
+    Merchant() {
     }
 }

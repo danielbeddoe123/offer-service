@@ -1,24 +1,30 @@
 package com.beddoed.offers.data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
-public class MerchandiseDTO {
+@EqualsAndHashCode
+@ToString
+public class Merchandise {
 
     @Id
     @GeneratedValue
     private UUID merchandiseId;
 
+    @Enumerated(EnumType.STRING)
     private MerchandiseType merchandiseType;
-    private MerchantDTO merchantDTO;
 
-    public MerchandiseDTO(UUID merchandiseId, MerchandiseType merchandiseType, MerchantDTO merchantDTO) {
+    @ManyToOne
+    private Merchant merchant;
+
+    public Merchandise(UUID merchandiseId, MerchandiseType merchandiseType, Merchant merchant) {
         this.merchandiseId = merchandiseId;
         this.merchandiseType = merchandiseType;
-        this.merchantDTO = merchantDTO;
+        this.merchant = merchant;
     }
 
     public UUID getMerchandiseId() {
@@ -29,8 +35,8 @@ public class MerchandiseDTO {
         return merchandiseType;
     }
 
-    public MerchantDTO getMerchantDTO() {
-        return merchantDTO;
+    public Merchant getMerchant() {
+        return merchant;
     }
 
     public void setMerchandiseId(UUID merchandiseId) {
@@ -41,14 +47,14 @@ public class MerchandiseDTO {
         this.merchandiseType = merchandiseType;
     }
 
-    public void setMerchantDTO(MerchantDTO merchantDTO) {
-        this.merchantDTO = merchantDTO;
+    public void setMerchant(Merchant merchant) {
+        this.merchant = merchant;
     }
 
     /**
      * For framework use only
      */
     @Deprecated
-    MerchandiseDTO() {
+    Merchandise() {
     }
 }
