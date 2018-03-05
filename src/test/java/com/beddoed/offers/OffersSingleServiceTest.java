@@ -2,9 +2,7 @@ package com.beddoed.offers;
 
 import com.beddoed.Application;
 import com.beddoed.offers.data.MerchandiseType;
-import com.beddoed.offers.model.Offer;
 import com.beddoed.offers.service.MerchandiseService;
-import com.beddoed.offers.service.OfferService;
 import com.beddoed.offers.utils.JdbcUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,11 +24,11 @@ import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.beddoed.offers.builders.MerchandiseBuilder.merchandiseBuilder;
 import static com.beddoed.offers.web.OfferRequestDataFactory.ACTIVE_OFFER_REQUEST;
 import static com.beddoed.offers.web.OfferRequestDataFactory.toJson;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @RunWith(SpringRunner.class)
@@ -42,7 +40,7 @@ public class OffersSingleServiceTest {
     private TestRestTemplate restTemplate;
 
     @Autowired
-    private OfferService offerService;
+    private MerchandiseService merchandiseService;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -69,7 +67,8 @@ public class OffersSingleServiceTest {
                 .body(offerRequestJson);
 
         final UUID offerId = UUID.randomUUID();
-        given(offerService.createOffer(any(Offer.class))).willReturn(offerId);
+//        given(offerService.createOffer(any(Offer.class))).willReturn(offerId);
+        given(merchandiseService.getMerchandiseById(merchandiseId)).willReturn(merchandiseBuilder().buildProduct());
 
         assertThat(jdbcUtils.countOffers(Optional.empty())).isEqualTo(0);
 
@@ -93,11 +92,6 @@ public class OffersSingleServiceTest {
 
 @Configuration
 class TestConfig {
-
-    @Bean
-    public OfferService offerService() {
-        return Mockito.mock(OfferService.class);
-    }
 
     @Bean
     public MerchandiseService merchandiseService() {
