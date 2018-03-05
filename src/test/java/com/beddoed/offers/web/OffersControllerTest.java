@@ -78,7 +78,7 @@ public class OffersControllerTest {
         final LocalDate expiryDate = LocalDate.of(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(dayOfMonth));
         final UUID merchantId = UUID.randomUUID();
         final Merchant merchant = new Merchant(merchantId);
-        final Product product = new Product(merchant);
+        final Product product = new Product(UUID.randomUUID(), merchant);
 
         final Offer expectedOffer = offerBuilder()
                 .merchandise(product)
@@ -244,7 +244,7 @@ public class OffersControllerTest {
         final boolean active = new Random().nextBoolean();
         final UUID merchantId = UUID.randomUUID();
         final Merchant merchant = new Merchant(merchantId);
-        final Product product = new Product(merchant);
+        final Product product = new Product(UUID.randomUUID(), merchant);
 
         given(offerService.createOffer(any(Offer.class))).willThrow(new RuntimeException("Some exception!"));
         given(merchandiseService.getMerchandiseById(merchandiseId)).willReturn(product);
