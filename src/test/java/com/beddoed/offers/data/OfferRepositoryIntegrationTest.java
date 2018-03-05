@@ -1,10 +1,11 @@
 package com.beddoed.offers.data;
 
-import com.beddoed.Application;
+import com.beddoed.offers.utils.JdbcUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -15,7 +16,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class)
+@DataJpaTest
 public class OfferRepositoryIntegrationTest {
 
     @Autowired
@@ -23,6 +24,13 @@ public class OfferRepositoryIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    private JdbcUtils jdbcUtils;
+
+    @Before
+    public void setup() {
+        jdbcUtils = new JdbcUtils(jdbcTemplate);
+    }
 
     @Test
     public void shouldSaveAndFindOfferInDatabase() {
@@ -35,9 +43,9 @@ public class OfferRepositoryIntegrationTest {
         final String currencyCode = "GBP";
         final BigDecimal price = BigDecimal.TEN.setScale(2, RoundingMode.HALF_UP);
 
-        jdbcTemplate.update("insert into currency (currency_code) VALUES (?)", currencyCode);
-        jdbcTemplate.update("insert into merchant (merchant_Id) VALUES (?)", merchantId);
-        jdbcTemplate.update("insert into merchandise (merchandise_Id, merchandise_Type, merchant_merchant_Id) VALUES (?, ?, ?)", merchandiseId, product.toString(), merchantId);
+        jdbcUtils.insertCurrency(currencyCode);
+        jdbcUtils.insertMerchant(merchantId);
+        jdbcUtils.insertMerchandise(merchantId, merchandiseId, product);
 
         final Offer offer = new Offer("test", merchandise, new Currency(currencyCode), price, true);
 
@@ -63,9 +71,9 @@ public class OfferRepositoryIntegrationTest {
         final BigDecimal price = BigDecimal.TEN.setScale(2, RoundingMode.HALF_UP);
         final BigDecimal price2 = BigDecimal.valueOf(20.00).setScale(2, RoundingMode.HALF_UP);
 
-        jdbcTemplate.update("insert into currency (currency_code) VALUES (?)", currencyCode);
-        jdbcTemplate.update("insert into merchant (merchant_Id) VALUES (?)", merchantId);
-        jdbcTemplate.update("insert into merchandise (merchandise_Id, merchandise_Type, merchant_merchant_Id) VALUES (?, ?, ?)", merchandiseId, product.toString(), merchantId);
+        jdbcUtils.insertCurrency(currencyCode);
+        jdbcUtils.insertMerchant(merchantId);
+        jdbcUtils.insertMerchandise(merchantId, merchandiseId, product);
 
         final Offer offer1 = new Offer("test", merchandise, new Currency(currencyCode), price, true);
         final Offer offer2 = new Offer("test2", merchandise, new Currency(currencyCode), price2, true);
