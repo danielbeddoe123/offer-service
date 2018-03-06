@@ -1,5 +1,6 @@
 package com.beddoed.offers.service;
 
+import com.beddoed.offers.builders.MerchandiseBuilder;
 import com.beddoed.offers.builders.OfferBuilder;
 import com.beddoed.offers.data.Merchandise;
 import com.beddoed.offers.data.MerchandiseType;
@@ -88,7 +89,27 @@ public class OfferServiceImplTest {
         expectedException.expectMessage("Merchandise type is not supported");
 
         // When
-        offerService.createOffer(OfferBuilder.offerBuilder().merchandise(unexpectedMerchandiseType).build());
+        offerService.createOffer(offerBuilder().merchandise(unexpectedMerchandiseType).build());
+    }
+
+    @Test
+    public void shouldThrowIllegalArgumentExceptionIfMerchandiseIsNull() {
+        // Expect
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("There is no merchandise to create an offer for");
+
+        // When
+        offerService.createOffer(offerBuilder().merchandise(null).build());
+    }
+
+    @Test
+    public void shouldThrowIllegalArgumentExceptionIfMerchandiseIdIsNotSet() {
+        // Expect
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("There is no merchandise to create an offer for");
+
+        // When
+        offerService.createOffer(offerBuilder().merchandise(merchandiseBuilder().merchandiseId(null).buildProduct()).build());
     }
 
     private Offer getExpectedOffer(String description, boolean active, UUID merchantId, UUID merchandiseId, String currencyCode, BigDecimal amount) {

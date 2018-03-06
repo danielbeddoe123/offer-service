@@ -65,17 +65,16 @@ public class OffersSingleServiceTest {
         final RequestEntity<String> requestEntity = RequestEntity.put(URI.create(offerUri))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(offerRequestJson);
-        given(merchandiseService.getMerchandiseById(merchandiseId)).willReturn(merchandiseBuilder().merchandiseId(merchandiseId).buildProduct());
         assertThat(jdbcUtils.countOffers()).isEqualTo(0);
 
         // When
         final ResponseEntity<Void> exchange = restTemplate.exchange(requestEntity, Void.class);
 
         // Then
+        assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(jdbcUtils.countOffers()).isEqualTo(1);
         final UUID createdOfferId = jdbcUtils.getOfferId();
 
-        assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(exchange.getHeaders().getLocation().getPath()).isEqualTo(offerUri + "/" + createdOfferId);
 
     }
@@ -84,14 +83,5 @@ public class OffersSingleServiceTest {
         final UUID merchantId = UUID.randomUUID();
         jdbcUtils.insertMerchant(merchantId);
         jdbcUtils.insertMerchandise(merchantId, merchandiseId, MerchandiseType.PRODUCT);
-    }
-}
-
-@Configuration
-class TestConfig {
-
-    @Bean
-    public MerchandiseService merchandiseService() {
-        return Mockito.mock(MerchandiseService.class);
     }
 }

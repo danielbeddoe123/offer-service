@@ -20,6 +20,7 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     public UUID createOffer(Offer offer) {
+        validate(offer);
         final com.beddoed.offers.data.Offer data = transformToDataRepresentation(offer);
         final com.beddoed.offers.data.Offer savedOffer = offerRepository.save(data);
         return savedOffer.getOfferId();
@@ -31,6 +32,12 @@ public class OfferServiceImpl implements OfferService {
         final Merchandise merchandiseData = new Merchandise(merchandise.getMerchandiseId(), getType(merchandise), merchant);
         final String currencyCode = offer.getPrice().getCurrency().getCurrencyCode();
         return new com.beddoed.offers.data.Offer(offer.getDescription(), merchandiseData, currencyCode, offer.getPrice().getAmount(), offer.getActive());
+    }
+
+    private void validate(Offer offer) {
+        if (offer.getMerchandise() == null || offer.getMerchandise().getMerchandiseId() == null) {
+            throw new IllegalArgumentException("There is no merchandise to create an offer for");
+        }
     }
 
     private MerchandiseType getType(com.beddoed.offers.model.Merchandise merchandise) {

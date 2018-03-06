@@ -37,7 +37,6 @@ public class MerchandiseRepositoryIntegrationTest {
         final Merchant merchant = new Merchant(merchantId);
         final UUID merchandiseId = UUID.randomUUID();
         final MerchandiseType product = MerchandiseType.PRODUCT;
-        final String currencyCode = "GBP";
         final Merchandise expectedMerchandise = new Merchandise(merchandiseId, product, merchant);
 
         jdbcUtils.insertMerchant(merchantId);
