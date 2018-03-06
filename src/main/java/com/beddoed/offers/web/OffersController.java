@@ -7,6 +7,7 @@ import com.beddoed.offers.service.OfferService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +15,19 @@ import org.springframework.web.util.UriTemplate;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.beddoed.offers.web.OfferTransformer.transformResource;
+import static com.beddoed.offers.web.OfferTransformer.transformModelToResource;
+import static com.beddoed.offers.web.OfferTransformer.transformResourceToModel;
+import static java.util.Optional.ofNullable;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.created;
+import static org.springframework.http.ResponseEntity.notFound;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 public class OffersController {
@@ -43,9 +50,15 @@ public class OffersController {
     public ResponseEntity<String> createOffer(@PathVariable("merchandiseId") final UUID merchandiseId, @Valid @RequestBody final OfferResource offerResource) {
         LOGGER.info("Received request to create offer: {}", offerResource);
         final Merchandise merchandise = merchandiseService.getMerchandiseById(merchandiseId);
-        final Offer offer = transformResource(offerResource, merchandise);
+        final Offer offer = transformResourceToModel(offerResource, merchandise);
         UUID offerId = offerService.createOffer(offer);
         return created(getOfferURI(merchandiseId, offerId)).build();
+    }
+
+    @RequestMapping(path = GET_OFFER_URI, method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<OfferResource> getOffer(@PathVariable("merchandiseId") final UUID merchandiseId, @PathVariable("offerId") final UUID offerId) {
+        LOGGER.info("Received request to get offer: {}", offerId);
+        return getOfferResponse(merchandiseId, offerId);
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
@@ -56,6 +69,13 @@ public class OffersController {
                 .collect(Collectors.toList());
         LOGGER.warn("Unprocessable entity!", e);
         return ResponseEntity.unprocessableEntity().body(new ApiError(fieldErrors));
+    }
+
+    private ResponseEntity<OfferResource> getOfferResponse(final UUID merchandiseId, final UUID offerId) {
+        return ofNullable(offerService.getOffer(offerId, merchandiseId)).map(o -> {
+            final OfferResource resource = transformModelToResource(o);
+            return ok(resource);
+        }).orElse(notFound().build());
     }
 
     private FieldError toFieldError(org.springframework.validation.FieldError error) {

@@ -26,6 +26,11 @@ public class OfferServiceImpl implements OfferService {
         return savedOffer.getOfferId();
     }
 
+    @Override
+    public Offer getOffer(UUID offerId, UUID merchandiseId) {
+        return null;
+    }
+
     private com.beddoed.offers.data.Offer transformToDataRepresentation(Offer offer) {
         final com.beddoed.offers.model.Merchandise merchandise = offer.getMerchandise();
         final Merchant merchant = new Merchant(merchandise.getMerchant().getMerchantId());

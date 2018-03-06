@@ -1,19 +1,14 @@
 package com.beddoed.offers.web;
 
 import com.beddoed.offers.builders.MerchandiseBuilder;
-import com.beddoed.offers.builders.OfferBuilder;
-import com.beddoed.offers.builders.PriceBuilder;
 import com.beddoed.offers.model.Merchandise;
 import com.beddoed.offers.model.Offer;
 import com.beddoed.offers.model.Price;
-import com.beddoed.offers.utils.TestUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Currency;
-import java.util.Locale;
 
 import static com.beddoed.offers.builders.OfferBuilder.offerBuilder;
 import static com.beddoed.offers.builders.PriceBuilder.priceBuilder;
@@ -50,7 +45,7 @@ public class OfferTransformerTest {
                 .build();
 
         // When
-        final Offer offer = OfferTransformer.transformResource(offerResource, merchandise);
+        final Offer offer = OfferTransformer.transformResourceToModel(offerResource, merchandise);
 
         // Then
         assertThat(offer).isEqualTo(expectedOffer);
