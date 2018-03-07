@@ -2,13 +2,13 @@ package com.beddoed.offers.data;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -31,12 +31,15 @@ public class Offer {
 
     private Boolean active;
 
-    public Offer(String description, Merchandise merchandise, String currencyCode, BigDecimal price, Boolean active) {
+    private LocalDate expiryDate;
+
+    public Offer(String description, Merchandise merchandise, String currencyCode, BigDecimal price, Boolean active, LocalDate expiryDate) {
         this.description = description;
         this.merchandise = merchandise;
         this.currencyCode = currencyCode;
         this.price = price;
         this.active = active;
+        this.expiryDate = expiryDate;
     }
 
     public UUID getOfferId() {
@@ -85,6 +88,14 @@ public class Offer {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public LocalDate getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(LocalDate expiryDate) {
+        this.expiryDate = expiryDate;
     }
 
     /**

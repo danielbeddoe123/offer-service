@@ -3,11 +3,11 @@ package com.beddoed.offers.web;
 import com.beddoed.offers.model.Merchandise;
 import com.beddoed.offers.model.Offer;
 import com.beddoed.offers.service.MerchandiseService;
+import com.beddoed.offers.service.OfferExpiredException;
 import com.beddoed.offers.service.OfferService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -17,17 +17,15 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.beddoed.offers.web.OfferTransformer.transformModelToResource;
 import static com.beddoed.offers.web.OfferTransformer.transformResourceToModel;
-import static java.util.Optional.ofNullable;
+import static java.util.Optional.of;
+import static org.springframework.http.HttpStatus.GONE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.ResponseEntity.created;
-import static org.springframework.http.ResponseEntity.notFound;
-import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.http.ResponseEntity.*;
 
 @RestController
 public class OffersController {
@@ -71,11 +69,18 @@ public class OffersController {
         return ResponseEntity.unprocessableEntity().body(new ApiError(fieldErrors));
     }
 
+    @ExceptionHandler(value = OfferExpiredException.class)
+    @ResponseStatus(GONE)
+    public void handleOfferExpiredException(OfferExpiredException e) {
+        LOGGER.warn("Offer has expired!", e);
+    }
+
     private ResponseEntity<OfferResource> getOfferResponse(final UUID merchandiseId, final UUID offerId) {
-        return ofNullable(offerService.getOffer(offerId, merchandiseId)).map(o -> {
-            final OfferResource resource = transformModelToResource(o);
-            return ok(resource);
-        }).orElse(notFound().build());
+        final Offer savedOffer = offerService.getActiveOffer(offerId, merchandiseId);
+        if (savedOffer == null) {
+            return notFound().build();
+        }
+        return ok(transformModelToResource(savedOffer));
     }
 
     private FieldError toFieldError(org.springframework.validation.FieldError error) {

@@ -2,7 +2,10 @@ package com.beddoed.offers.model;
 
 import lombok.EqualsAndHashCode;
 
+import java.util.Objects;
 import java.util.UUID;
+
+import static java.util.Objects.requireNonNull;
 
 @EqualsAndHashCode
 public abstract class Merchandise {
@@ -10,7 +13,7 @@ public abstract class Merchandise {
     private final UUID merchandiseId;
     private final Merchant merchant;
 
-    public Merchandise(UUID merchandiseId, Merchant merchant) {
+    protected Merchandise(UUID merchandiseId, Merchant merchant) {
         this.merchandiseId = merchandiseId;
         this.merchant = merchant;
     }

@@ -3,6 +3,7 @@ package com.beddoed.offers.web;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 
 @ToString
+@EqualsAndHashCode
 public class OfferResource {
 
     @NotNull(message = "Expiry date cannot be null")

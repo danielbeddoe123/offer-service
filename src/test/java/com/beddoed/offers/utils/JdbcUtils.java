@@ -4,9 +4,14 @@ import com.beddoed.offers.data.MerchandiseType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,6 +29,12 @@ public class JdbcUtils {
 
     public void insertMerchant(UUID merchantId) {
         jdbcTemplate.update("insert into merchant (merchant_Id) VALUES (?)", merchantId);
+    }
+
+    public void insertOffer(UUID offerId, String description, UUID merchandiseId, String currencyCode, BigDecimal price, boolean active, LocalDate expiryDate) {
+        jdbcTemplate.update("insert into offer (offer_Id, description, merchandise_merchandise_Id, currency_Code, price, active, expiry_Date) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                offerId, description, merchandiseId, currencyCode, price, active, expiryDate);
     }
 
     public long countOffers() {
@@ -47,5 +58,4 @@ public class JdbcUtils {
         long low = bb.getLong();
         return new UUID(high, low);
     }
-
 }

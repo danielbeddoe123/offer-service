@@ -16,7 +16,7 @@ public class Offer {
     private final Price price;
     private final Boolean active;
 
-    public Offer(Merchandise merchandise, LocalDate expiryDate, String description, Price price, Boolean active) {
+    private Offer(Merchandise merchandise, LocalDate expiryDate, String description, Price price, Boolean active) {
         this.merchandise = merchandise;
         this.expiryDate = expiryDate;
         this.description = description;
@@ -42,5 +42,48 @@ public class Offer {
 
     public Boolean getActive() {
         return active;
+    }
+
+    public static class Builder {
+
+        private Merchandise merchandise;
+        private LocalDate expiryDate;
+        private String description;
+        private Price price;
+        private Boolean active;
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public Builder merchandise(Merchandise merchandise) {
+            this.merchandise = merchandise;
+            return this;
+        }
+
+        public Builder expiryDate(LocalDate expiryDate) {
+            this.expiryDate = expiryDate;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder price(Price price) {
+            this.price = price;
+            return this;
+        }
+
+        public Builder active(Boolean active) {
+            this.active = active;
+            return this;
+        }
+
+
+        public Offer build() {
+            return new Offer(merchandise, expiryDate, description, price, active);
+        }
     }
 }

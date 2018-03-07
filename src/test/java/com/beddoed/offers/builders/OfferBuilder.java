@@ -8,6 +8,8 @@ import org.apache.commons.lang3.RandomStringUtils;
 import java.time.LocalDate;
 import java.util.Random;
 
+import static com.beddoed.offers.model.Offer.Builder.builder;
+
 public class OfferBuilder {
 
     private Merchandise merchandise = null;
@@ -21,7 +23,13 @@ public class OfferBuilder {
     }
 
     public Offer build() {
-        return new Offer(merchandise, expiryDate, description, price, active);
+        return builder()
+                .merchandise(merchandise)
+                .expiryDate(expiryDate)
+                .description(description)
+                .price(price)
+                .active(active)
+                .build();
     }
 
     public OfferBuilder expiryDate(LocalDate expiryDate) {

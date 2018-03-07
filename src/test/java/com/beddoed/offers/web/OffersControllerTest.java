@@ -5,6 +5,7 @@ import com.beddoed.offers.model.Merchant;
 import com.beddoed.offers.model.Offer;
 import com.beddoed.offers.model.Product;
 import com.beddoed.offers.service.MerchandiseService;
+import com.beddoed.offers.service.OfferExpiredException;
 import com.beddoed.offers.service.OfferService;
 import com.beddoed.offers.web.resource.OfferResource;
 import com.google.gson.GsonBuilder;
@@ -35,12 +36,14 @@ import static com.beddoed.offers.builders.PriceBuilder.priceBuilder;
 import static com.beddoed.offers.utils.TestUtils.randomOneOf;
 import static com.beddoed.offers.web.resource.OfferResourceDataFactory.toJson;
 import static java.math.BigDecimal.ROUND_HALF_UP;
+import static java.time.LocalDate.now;
 import static java.util.Currency.getInstance;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -266,12 +269,12 @@ public class OffersControllerTest {
     }
 
     @Test
-    public void shouldBeAbleToQueryOffers() throws Exception {
+    public void shouldBeAbleToQueryActiveOffers() throws Exception {
         // Given
         final UUID offerId = randomUUID();
         final Merchandise merchandise = merchandiseBuilder().merchandiseId(merchandiseId).buildProduct();
-        final Offer offer = offerBuilder().merchandise(merchandise).build();
-        given(offerService.getOffer(offerId, merchandiseId)).willReturn(offer);
+        final Offer offer = offerBuilder().active(true).expiryDate(now().plusDays(1)).merchandise(merchandise).build();
+        given(offerService.getActiveOffer(offerId, merchandiseId)).willReturn(offer);
 
         // When
         final MvcResult mvcResult = mvc.perform(get(GET_URI_TEMPLATE, merchandiseId, offerId))
@@ -300,12 +303,7 @@ public class OffersControllerTest {
     public void shouldReturnHttpStatusOfGoneIfOfferHasExpired() throws Exception {
         // Given
         final UUID offerId = randomUUID();
-        final Merchandise merchandise = merchandiseBuilder().merchandiseId(merchandiseId).buildProduct();
-        final Offer offer = offerBuilder()
-                .merchandise(merchandise)
-                .expiryDate(LocalDate.now().minusDays(1))
-                .build();
-        given(offerService.getOffer(offerId, merchandiseId)).willReturn(offer);
+        doThrow(new OfferExpiredException("Offer has expired")).when(offerService).getActiveOffer(offerId, merchandiseId);
 
         // When / Then
         mvc.perform(get(GET_URI_TEMPLATE, merchandiseId, offerId))

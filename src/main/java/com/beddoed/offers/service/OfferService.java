@@ -10,5 +10,5 @@ public interface OfferService {
 
     UUID createOffer(Offer offer);
 
-    Offer getOffer(UUID offerId, UUID merchandiseId);
+    Offer getActiveOffer(UUID offerId, UUID merchandiseId);
 }

@@ -1,6 +1,7 @@
 package com.beddoed.offers.web;
 
 import com.beddoed.offers.builders.MerchandiseBuilder;
+import com.beddoed.offers.builders.OfferBuilder;
 import com.beddoed.offers.model.Merchandise;
 import com.beddoed.offers.model.Offer;
 import com.beddoed.offers.model.Price;
@@ -35,7 +36,10 @@ public class OfferTransformerTest {
         offerResource.setExpiryDate(expiryDate);
         offerResource.setPriceAmount(priceAmount);
 
-        final Price expectedPrice = priceBuilder().currency(Currency.getInstance(currencyCode)).amount(priceAmount).build();
+        final Price expectedPrice = priceBuilder()
+                .currency(Currency.getInstance(currencyCode))
+                .amount(priceAmount)
+                .build();
         final Offer expectedOffer = offerBuilder()
                 .active(active)
                 .description(description)
@@ -49,5 +53,40 @@ public class OfferTransformerTest {
 
         // Then
         assertThat(offer).isEqualTo(expectedOffer);
+    }
+
+    @Test
+    public void shouldTransformModelToResource() {
+        // Given
+        final boolean active = randomBoolean();
+        final String currencyCode = "GBP";
+        final String description = randomAlphanumeric(10);
+        final LocalDate expiryDate = LocalDate.now();
+        final BigDecimal priceAmount = randomBigDecimal();
+        final Merchandise merchandise = MerchandiseBuilder.merchandiseBuilder().buildProduct();
+        final OfferResource expectedOfferResource = new OfferResource();
+        expectedOfferResource.setActive(active);
+        expectedOfferResource.setCurrencyCode(currencyCode);
+        expectedOfferResource.setDescription(description);
+        expectedOfferResource.setExpiryDate(expiryDate);
+        expectedOfferResource.setPriceAmount(priceAmount);
+
+        final Price price = priceBuilder()
+                .currency(Currency.getInstance(currencyCode))
+                .amount(priceAmount)
+                .build();
+        final Offer offer = offerBuilder()
+                .active(active)
+                .description(description)
+                .expiryDate(expiryDate)
+                .merchandise(merchandise)
+                .price(price)
+                .build();
+
+        // When
+        final OfferResource actualOfferResource = OfferTransformer.transformModelToResource(offer);
+
+        // Then
+        assertThat(actualOfferResource).isEqualTo(expectedOfferResource);
     }
 }
