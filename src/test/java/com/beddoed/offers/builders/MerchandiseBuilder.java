@@ -28,6 +28,10 @@ public class MerchandiseBuilder {
     }
 
     public Merchandise buildProduct() {
-        return new Product(merchandiseId, merchant);
+        return Product.Builder
+                .builder()
+                .merchant(merchant)
+                .merchandiseId(merchandiseId)
+                .build();
     }
 }

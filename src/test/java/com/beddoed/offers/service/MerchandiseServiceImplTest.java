@@ -1,5 +1,6 @@
 package com.beddoed.offers.service;
 
+import com.beddoed.offers.builders.MerchantBuilder;
 import com.beddoed.offers.data.MerchandiseDTO;
 import com.beddoed.offers.data.MerchandiseRepository;
 import com.beddoed.offers.data.MerchantDTO;
@@ -42,7 +43,7 @@ public class MerchandiseServiceImplTest {
         // Given
         final UUID merchandiseId = UUID.randomUUID();
         final UUID merchantId = UUID.randomUUID();
-        final Merchant merchant = new Merchant(merchantId);
+        final Merchant merchant = MerchantBuilder.merchantBuilder().merchantId(merchantId).build();
         final Merchandise expected = merchandiseBuilder()
                 .merchandiseId(merchandiseId)
                 .merchant(merchant)

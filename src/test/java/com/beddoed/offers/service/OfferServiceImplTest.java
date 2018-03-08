@@ -1,10 +1,11 @@
 package com.beddoed.offers.service;
 
+import com.beddoed.offers.builders.MerchandiseBuilder;
 import com.beddoed.offers.builders.PriceBuilder;
 import com.beddoed.offers.data.*;
+import com.beddoed.offers.model.Merchandise;
 import com.beddoed.offers.model.Merchant;
 import com.beddoed.offers.model.Price;
-import com.beddoed.offers.model.Product;
 import com.beddoed.offers.utils.TestUtils;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,6 +21,7 @@ import java.util.Currency;
 import java.util.UUID;
 
 import static com.beddoed.offers.builders.MerchandiseBuilder.merchandiseBuilder;
+import static com.beddoed.offers.builders.MerchantBuilder.merchantBuilder;
 import static com.beddoed.offers.builders.OfferBuilder.offerBuilder;
 import static com.beddoed.offers.builders.PriceBuilder.priceBuilder;
 import static com.beddoed.offers.utils.TestUtils.randomBigDecimal;
@@ -28,6 +30,7 @@ import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OfferServiceImplTest {
@@ -47,7 +50,7 @@ public class OfferServiceImplTest {
         final String description = randomAlphabetic(10);
         final boolean active = TestUtils.randomBoolean();
         final UUID merchantId = randomUUID();
-        final Merchant merchant = new Merchant(merchantId);
+        final Merchant merchant = merchantBuilder().merchantId(merchantId).build();
         final UUID merchandiseId = randomUUID();
         final String currencyCode = "GBP";
         final Currency currency = Currency.getInstance(currencyCode);
@@ -82,7 +85,7 @@ public class OfferServiceImplTest {
     @Test
     public void shouldThrowExceptionIfUnsupportedMerchandiseType() {
         // Given
-        final com.beddoed.offers.model.Merchandise unexpectedMerchandiseType = new com.beddoed.offers.model.Merchandise(randomUUID(), new Merchant(randomUUID())) {};
+        final com.beddoed.offers.model.Merchandise unexpectedMerchandiseType = new com.beddoed.offers.model.Merchandise(randomUUID(), merchantBuilder().build()) {};
 
         // Expect
         expectedException.expect(UnsupportedOperationException.class);
@@ -90,26 +93,6 @@ public class OfferServiceImplTest {
 
         // When
         offerService.createOffer(offerBuilder().merchandise(unexpectedMerchandiseType).build());
-    }
-
-    @Test
-    public void shouldThrowIllegalArgumentExceptionIfMerchandiseIsNull() {
-        // Expect
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("There is no merchandise to create an offer for");
-
-        // When
-        offerService.createOffer(offerBuilder().merchandise(null).build());
-    }
-
-    @Test
-    public void shouldThrowIllegalArgumentExceptionIfMerchandiseIdIsNotSet() {
-        // Expect
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("There is no merchandise to create an offer for");
-
-        // When
-        offerService.createOffer(offerBuilder().merchandise(merchandiseBuilder().merchandiseId(null).buildProduct()).build());
     }
 
     @Test
@@ -176,9 +159,25 @@ public class OfferServiceImplTest {
         offerService.getActiveOffer(offerId, merchandiseId);
     }
 
+    @Test
+    public void shouldBeAbleToCancelOffer() {
+        // Given
+        final UUID offerId = randomUUID();
+
+        // When
+        offerService.cancelOffer(offerId);
+
+        // Then
+        verify(offerRepository).cancelOffer(offerId);
+    }
+
     private com.beddoed.offers.model.Offer getOffer(UUID merchandiseId, UUID merchantId, LocalDate expiryDate, String description, String currencyCode, BigDecimal priceAmount, Boolean active) {
-        final Merchant merchant = new Merchant(merchantId);
-        final Product product = new Product(merchandiseId, merchant);
+        final Merchant merchant = merchantBuilder().merchantId(merchantId).build();
+        final Merchandise product = MerchandiseBuilder
+                .merchandiseBuilder()
+                .merchandiseId(merchandiseId)
+                .merchant(merchant)
+                .buildProduct();
         final Price price = PriceBuilder.priceBuilder().currency(currencyCode).amount(priceAmount).build();
         return offerBuilder()
                 .merchandise(product)

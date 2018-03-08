@@ -4,7 +4,8 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.time.LocalDate;
-import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 @EqualsAndHashCode
 @ToString
@@ -83,6 +84,11 @@ public class Offer {
 
 
         public Offer build() {
+            requireNonNull(merchandise, "Merchandise cannot be null");
+            requireNonNull(expiryDate, "Expiry date cannot be null");
+            requireNonNull(description, "Description cannot be null");
+            requireNonNull(price, "Price cannot be null");
+            requireNonNull(active, "Active cannot be null");
             return new Offer(merchandise, expiryDate, description, price, active);
         }
     }

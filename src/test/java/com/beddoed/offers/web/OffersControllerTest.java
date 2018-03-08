@@ -1,9 +1,10 @@
 package com.beddoed.offers.web;
 
+import com.beddoed.offers.builders.MerchandiseBuilder;
+import com.beddoed.offers.builders.MerchantBuilder;
 import com.beddoed.offers.model.Merchandise;
 import com.beddoed.offers.model.Merchant;
 import com.beddoed.offers.model.Offer;
-import com.beddoed.offers.model.Product;
 import com.beddoed.offers.service.MerchandiseService;
 import com.beddoed.offers.service.OfferExpiredException;
 import com.beddoed.offers.service.OfferService;
@@ -33,6 +34,7 @@ import java.util.UUID;
 import static com.beddoed.offers.builders.MerchandiseBuilder.merchandiseBuilder;
 import static com.beddoed.offers.builders.OfferBuilder.offerBuilder;
 import static com.beddoed.offers.builders.PriceBuilder.priceBuilder;
+import static com.beddoed.offers.model.Merchant.Builder.builder;
 import static com.beddoed.offers.utils.TestUtils.randomOneOf;
 import static com.beddoed.offers.web.resource.OfferResourceDataFactory.toJson;
 import static java.math.BigDecimal.ROUND_HALF_UP;
@@ -46,9 +48,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpHeaders.LOCATION;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
@@ -88,8 +88,12 @@ public class OffersControllerTest {
         final boolean active = new Random().nextBoolean();
         final LocalDate expiryDate = LocalDate.of(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(dayOfMonth));
         final UUID merchantId = randomUUID();
-        final Merchant merchant = new Merchant(merchantId);
-        final Product product = new Product(randomUUID(), merchant);
+        final Merchant merchant = builder().merchantId(merchantId).build();
+        final Merchandise product = MerchandiseBuilder
+                .merchandiseBuilder()
+                .merchandiseId(randomUUID())
+                .merchant(merchant)
+                .buildProduct();
 
         final Offer expectedOffer = offerBuilder()
                 .merchandise(product)
@@ -254,8 +258,12 @@ public class OffersControllerTest {
         final BigDecimal amount = BigDecimal.valueOf(20.00).setScale(2, ROUND_HALF_UP);
         final boolean active = new Random().nextBoolean();
         final UUID merchantId = randomUUID();
-        final Merchant merchant = new Merchant(merchantId);
-        final Product product = new Product(randomUUID(), merchant);
+        final Merchant merchant = MerchantBuilder.merchantBuilder().merchantId(merchantId).build();
+        final Merchandise product = MerchandiseBuilder
+                .merchandiseBuilder()
+                .merchandiseId(randomUUID())
+                .merchant(merchant)
+                .buildProduct();
 
         given(offerService.createOffer(any(Offer.class))).willThrow(new RuntimeException("Some exception!"));
         given(merchandiseService.getMerchandiseById(merchandiseId)).willReturn(product);

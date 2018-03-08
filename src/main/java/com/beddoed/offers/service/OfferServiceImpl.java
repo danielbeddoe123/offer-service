@@ -1,6 +1,7 @@
 package com.beddoed.offers.service;
 
 import com.beddoed.offers.data.*;
+import com.beddoed.offers.model.Merchandise;
 import com.beddoed.offers.model.Offer;
 import com.beddoed.offers.model.Price.Builder;
 import com.beddoed.offers.model.Product;
@@ -28,7 +29,6 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     public UUID createOffer(Offer offer) {
-        validate(offer);
         final OfferDTO data = transformToDataRepresentation(offer);
         final OfferDTO savedOfferDTO = offerRepository.save(data);
         return savedOfferDTO.getOfferId();
@@ -49,7 +49,7 @@ public class OfferServiceImpl implements OfferService {
     @Override
     @Transactional
     public void cancelOffer(UUID offerId) {
-        offerRepository.updateOfferAsCancelled(offerId);
+        offerRepository.cancelOffer(offerId);
     }
 
     private Offer transformToModelRepresentation(OfferDTO offerDTO) {
@@ -66,20 +66,14 @@ public class OfferServiceImpl implements OfferService {
     }
 
     private OfferDTO transformToDataRepresentation(Offer offer) {
-        final com.beddoed.offers.model.Merchandise merchandise = offer.getMerchandise();
+        final Merchandise merchandise = offer.getMerchandise();
         final MerchantDTO merchant = new MerchantDTO(merchandise.getMerchant().getMerchantId());
         final MerchandiseDTO merchandiseDTO = new MerchandiseDTO(merchandise.getMerchandiseId(), getType(merchandise), merchant);
         final String currencyCode = offer.getPrice().getCurrency().getCurrencyCode();
         return new OfferDTO(offer.getDescription(), merchandiseDTO, currencyCode, offer.getPrice().getAmount(), offer.getActive(), offer.getExpiryDate());
     }
 
-    private void validate(Offer offer) {
-        if (offer.getMerchandise() == null || offer.getMerchandise().getMerchandiseId() == null) {
-            throw new IllegalArgumentException("There is no merchandise to create an offer for");
-        }
-    }
-
-    private MerchandiseType getType(com.beddoed.offers.model.Merchandise merchandise) {
+    private MerchandiseType getType(Merchandise merchandise) {
         if (merchandise instanceof Product) {
             return MerchandiseType.PRODUCT;
         }

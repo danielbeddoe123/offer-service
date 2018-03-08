@@ -177,7 +177,7 @@ public class OfferRepositoryIntegrationTest {
         assertThat(jdbcUtils.isOfferActive(offerId)).isEqualTo(true);
 
         // When
-        offerRepository.updateOfferAsCancelled(offerId);
+        offerRepository.cancelOffer(offerId);
 
         // Then
         assertThat(jdbcUtils.isOfferActive(offerId)).isEqualTo(false);

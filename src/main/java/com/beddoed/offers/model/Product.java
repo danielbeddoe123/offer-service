@@ -5,11 +5,11 @@ import java.util.UUID;
 import static java.util.Objects.requireNonNull;
 
 public class Product extends Merchandise {
-    public Product(UUID merchandiseId, Merchant merchant) {
+    private Product(UUID merchandiseId, Merchant merchant) {
         super(merchandiseId, merchant);
     }
 
-    static class Builder {
+    public static class Builder {
         private UUID merchandiseId;
         private Merchant merchant;
 
@@ -17,19 +17,19 @@ public class Product extends Merchandise {
             return new Builder();
         }
 
-        public Builder setMerchandiseId(UUID merchandiseId) {
+        public Builder merchandiseId(UUID merchandiseId) {
             this.merchandiseId = merchandiseId;
             return this;
         }
 
-        public Builder setMerchant(Merchant merchant) {
+        public Builder merchant(Merchant merchant) {
             this.merchant = merchant;
             return this;
         }
 
         public Merchandise build() {
-            requireNonNull(merchandiseId, "MerchandiseDTO ID cannot be null");
-            requireNonNull(merchant, "MerchantDTO cannot be null");
+            requireNonNull(merchandiseId, "Merchandise ID cannot be null");
+            requireNonNull(merchant, "Merchant cannot be null");
             return new Product(merchandiseId, merchant);
         }
     }

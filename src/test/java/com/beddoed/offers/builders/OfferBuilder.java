@@ -8,11 +8,12 @@ import org.apache.commons.lang3.RandomStringUtils;
 import java.time.LocalDate;
 import java.util.Random;
 
+import static com.beddoed.offers.builders.MerchandiseBuilder.merchandiseBuilder;
 import static com.beddoed.offers.model.Offer.Builder.builder;
 
 public class OfferBuilder {
 
-    private Merchandise merchandise = null;
+    private Merchandise merchandise = merchandiseBuilder().buildProduct();
     private LocalDate expiryDate = LocalDate.now();
     private String description = RandomStringUtils.random(10);
     private Price price = PriceBuilder.priceBuilder().build();
