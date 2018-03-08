@@ -23,14 +23,12 @@ public class OfferTransformerTest {
     @Test
     public void shouldTransformResourceToModel() {
         // Given
-        final boolean active = randomBoolean();
         final String currencyCode = "GBP";
         final String description = randomAlphanumeric(10);
         final LocalDate expiryDate = LocalDate.now();
         final BigDecimal priceAmount = randomBigDecimal();
         final Merchandise merchandise = MerchandiseBuilder.merchandiseBuilder().buildProduct();
         final OfferResource offerResource = new OfferResource();
-        offerResource.setActive(active);
         offerResource.setCurrencyCode(currencyCode);
         offerResource.setDescription(description);
         offerResource.setExpiryDate(expiryDate);
@@ -41,7 +39,7 @@ public class OfferTransformerTest {
                 .amount(priceAmount)
                 .build();
         final Offer expectedOffer = offerBuilder()
-                .active(active)
+                .active(true)
                 .description(description)
                 .expiryDate(expiryDate)
                 .merchandise(merchandise)
@@ -58,14 +56,12 @@ public class OfferTransformerTest {
     @Test
     public void shouldTransformModelToResource() {
         // Given
-        final boolean active = randomBoolean();
         final String currencyCode = "GBP";
         final String description = randomAlphanumeric(10);
         final LocalDate expiryDate = LocalDate.now();
         final BigDecimal priceAmount = randomBigDecimal();
         final Merchandise merchandise = MerchandiseBuilder.merchandiseBuilder().buildProduct();
         final OfferResource expectedOfferResource = new OfferResource();
-        expectedOfferResource.setActive(active);
         expectedOfferResource.setCurrencyCode(currencyCode);
         expectedOfferResource.setDescription(description);
         expectedOfferResource.setExpiryDate(expiryDate);
@@ -76,7 +72,6 @@ public class OfferTransformerTest {
                 .amount(priceAmount)
                 .build();
         final Offer offer = offerBuilder()
-                .active(active)
                 .description(description)
                 .expiryDate(expiryDate)
                 .merchandise(merchandise)

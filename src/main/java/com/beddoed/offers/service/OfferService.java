@@ -1,11 +1,7 @@
 package com.beddoed.offers.service;
 
 import com.beddoed.offers.model.Offer;
-import com.beddoed.offers.web.OfferResource;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public interface OfferService {
@@ -14,5 +10,5 @@ public interface OfferService {
 
     Offer getActiveOffer(UUID offerId, UUID merchandiseId);
 
-    void cancelOffer(UUID offerId);
+    void cancelOffer(UUID offerId, UUID merchandiseId);
 }

@@ -19,7 +19,7 @@ public class OfferTransformer {
                 .price(price)
                 .merchandise(merchandise)
                 .expiryDate(offerResource.getExpiryDate())
-                .active(offerResource.isActive())
+                .active(true)
                 .description(offerResource.getDescription())
                 .build();
     }
@@ -30,7 +30,6 @@ public class OfferTransformer {
         offerResource.setExpiryDate(offer.getExpiryDate());
         offerResource.setCurrencyCode(offer.getPrice().getCurrency().getCurrencyCode());
         offerResource.setDescription(offer.getDescription());
-        offerResource.setActive(offer.getActive());
         return offerResource;
     }
 }

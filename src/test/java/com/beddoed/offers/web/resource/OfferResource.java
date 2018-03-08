@@ -14,14 +14,12 @@ public class OfferResource {
     private String description;
     private String currencyCode;
     private BigDecimal priceAmount;
-    private boolean active;
 
-    public OfferResource(String expiryDate, String description, String currencyCode, BigDecimal priceAmount, boolean active) {
+    public OfferResource(String expiryDate, String description, String currencyCode, BigDecimal priceAmount) {
         this.expiryDate = expiryDate;
         this.description = description;
         this.currencyCode = currencyCode;
         this.priceAmount = priceAmount;
-        this.active = active;
     }
 
     public String getExpiryDate() {
@@ -40,10 +38,6 @@ public class OfferResource {
         return priceAmount;
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
     public void setExpiryDate(String expiryDate) {
         this.expiryDate = expiryDate;
     }
@@ -58,10 +52,6 @@ public class OfferResource {
 
     public void setPriceAmount(BigDecimal priceAmount) {
         this.priceAmount = priceAmount;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 
     /**

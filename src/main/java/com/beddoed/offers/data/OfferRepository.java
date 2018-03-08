@@ -11,6 +11,6 @@ public interface OfferRepository extends JpaRepository<OfferDTO, UUID> {
     OfferDTO findByOfferIdAndMerchandise_MerchandiseId(UUID offerId, UUID merchandiseId);
 
     @Modifying
-    @Query("update OfferDTO o set o.active = false where o.offerId = ?1")
-    void cancelOffer(UUID offerId);
+    @Query("update OfferDTO o set o.active = false where o.offerId = ?1 and o.merchandise.merchandiseId = ?2")
+    int cancelOffer(UUID offerId, UUID merchandiseId);
 }

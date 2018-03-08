@@ -57,6 +57,7 @@ public class OffersControllerTest {
 
     private static final String CREATE_URI_TEMPLATE = "/merchandise/{merchandiseId}/offer";
     private static final String GET_URI_TEMPLATE = CREATE_URI_TEMPLATE + "/{offerId}";
+    private static final String DELETE_URI_TEMPLATE = CREATE_URI_TEMPLATE + "/{offerId}";
 
     @Autowired
     private MockMvc mvc;
@@ -85,7 +86,6 @@ public class OffersControllerTest {
         final String description = "Some description";
         final String currencyCode = "GBP";
         final BigDecimal amount = BigDecimal.valueOf(20.00).setScale(2, ROUND_HALF_UP);
-        final boolean active = new Random().nextBoolean();
         final LocalDate expiryDate = LocalDate.of(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(dayOfMonth));
         final UUID merchantId = randomUUID();
         final Merchant merchant = builder().merchantId(merchantId).build();
@@ -98,7 +98,7 @@ public class OffersControllerTest {
         final Offer expectedOffer = offerBuilder()
                 .merchandise(product)
                 .expiryDate(expiryDate)
-                .active(active)
+                .active(true)
                 .price(priceBuilder()
                         .currency(getInstance(currencyCode))
                         .amount(amount)
@@ -108,7 +108,7 @@ public class OffersControllerTest {
 
         given(offerService.createOffer(expectedOffer)).willReturn(offerId);
         given(merchandiseService.getMerchandiseById(merchandiseId)).willReturn(product);
-        final String jsonRequest = toJson(isoFormatExpiryDate, description, currencyCode, amount, active);
+        final String jsonRequest = toJson(isoFormatExpiryDate, description, currencyCode, amount);
 
         // When / Then
         mvc.perform(put(CREATE_URI_TEMPLATE, merchandiseId)
@@ -150,7 +150,7 @@ public class OffersControllerTest {
         // When / Then
         mvc.perform(put(CREATE_URI_TEMPLATE, merchandiseId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson("2018-03-02", "Something", invalidCurrency, BigDecimal.valueOf(0.5), false)))
+                .content(toJson("2018-03-02", "Something", invalidCurrency, BigDecimal.valueOf(0.5))))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().json(expectedApiErrorResponseJson));
     }
@@ -166,7 +166,7 @@ public class OffersControllerTest {
         // When / Then
         mvc.perform(put(CREATE_URI_TEMPLATE, merchandiseId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson(null, "Something", "GBP", BigDecimal.valueOf(0.5), false)))
+                .content(toJson(null, "Something", "GBP", BigDecimal.valueOf(0.5))))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().json(expectedApiErrorResponseJson));
     }
@@ -182,7 +182,7 @@ public class OffersControllerTest {
         // When / Then
         mvc.perform(put(CREATE_URI_TEMPLATE, merchandiseId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson("2018-03-02", "", "GBP", BigDecimal.valueOf(0.5), false)))
+                .content(toJson("2018-03-02", "", "GBP", BigDecimal.valueOf(0.5))))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().json(expectedApiErrorResponseJson));
     }
@@ -198,7 +198,7 @@ public class OffersControllerTest {
         // When / Then
         mvc.perform(put(CREATE_URI_TEMPLATE, merchandiseId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson("2018-03-02", "Something", "GBP", null, false)))
+                .content(toJson("2018-03-02", "Something", "GBP", null)))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().json(expectedApiErrorResponseJson));
     }
@@ -214,7 +214,7 @@ public class OffersControllerTest {
         // When / Then
         mvc.perform(put(CREATE_URI_TEMPLATE, merchandiseId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson("2018-03-02", "Something", "GBP", BigDecimal.valueOf(-1.0), false)))
+                .content(toJson("2018-03-02", "Something", "GBP", BigDecimal.valueOf(-1.0))))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().json(expectedApiErrorResponseJson));
     }
@@ -229,7 +229,7 @@ public class OffersControllerTest {
         // When / Then
         mvc.perform(put(CREATE_URI_TEMPLATE, merchandiseId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson("2018-03-02", "Something", "GBP", BigDecimal.valueOf(0), false)))
+                .content(toJson("2018-03-02", "Something", "GBP", BigDecimal.valueOf(0))))
                 .andExpect(status().isCreated())
                 .andExpect(header().string(LOCATION, equalTo("/merchandise/" + merchandiseId + "/offer/" + offerId)));
 
@@ -267,7 +267,7 @@ public class OffersControllerTest {
 
         given(offerService.createOffer(any(Offer.class))).willThrow(new RuntimeException("Some exception!"));
         given(merchandiseService.getMerchandiseById(merchandiseId)).willReturn(product);
-        final String jsonRequest = toJson(isoFormatExpiryDate, description, currencyCode, amount, active);
+        final String jsonRequest = toJson(isoFormatExpiryDate, description, currencyCode, amount);
 
         // When / Then
         mvc.perform(put(CREATE_URI_TEMPLATE, merchandiseId)
@@ -311,11 +311,22 @@ public class OffersControllerTest {
     public void shouldReturnHttpStatusOfGoneIfOfferHasExpired() throws Exception {
         // Given
         final UUID offerId = randomUUID();
-        doThrow(new OfferExpiredException("OfferDTO has expired")).when(offerService).getActiveOffer(offerId, merchandiseId);
+        doThrow(new OfferExpiredException("Offer has expired")).when(offerService).getActiveOffer(offerId, merchandiseId);
 
         // When / Then
         mvc.perform(get(GET_URI_TEMPLATE, merchandiseId, offerId))
                 .andExpect(status().isGone());
+    }
+
+    @Test
+    public void shouldReturnOkIfCancelledOfferSuccessfully() throws Exception {
+        // Given
+        final UUID offerId = randomUUID();
+        given(offerService.getActiveOffer(offerId, merchandiseId)).willReturn(offerBuilder().build());
+
+        // When / Then
+        mvc.perform(delete(DELETE_URI_TEMPLATE, merchandiseId, offerId))
+                .andExpect(status().isOk());
     }
 
     private class ApiErrorResponse {

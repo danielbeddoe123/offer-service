@@ -88,7 +88,7 @@ public class OffersSingleServiceTest {
         final String offerUri = "/merchandise/" + merchandiseId + "/offer/" + offerId;
 
         final LocalDate expiryDate = LocalDate.now().plusDays(10);
-        final String description = "Active OfferDTO";
+        final String description = "Active Offer";
         final String currencyCode = "GBP";
         final BigDecimal price = BigDecimal.valueOf(100.00).setScale(2, BigDecimal.ROUND_HALF_UP);
         final boolean active = true;
@@ -96,7 +96,7 @@ public class OffersSingleServiceTest {
         jdbcUtils.insertOffer(offerId, description, merchandiseId, currencyCode, price, active, expiryDate);
         assertThat(jdbcUtils.countOffers()).isEqualTo(1);
 
-        final OfferResource expectedResource = new OfferResource(expiryDate.format(DateTimeFormatter.ISO_DATE), description, currencyCode, price, active);
+        final OfferResource expectedResource = new OfferResource(expiryDate.format(DateTimeFormatter.ISO_DATE), description, currencyCode, price);
         final RequestEntity<Void> requestEntity = RequestEntity.get(URI.create(offerUri)).build();
 
         // When
@@ -117,7 +117,7 @@ public class OffersSingleServiceTest {
         final String offerUri = "/merchandise/" + merchandiseId + "/offer/" + offerId;
 
         final LocalDate expiryDate = LocalDate.now().minusDays(10);
-        final String description = "Active OfferDTO";
+        final String description = "Active Offer";
         final String currencyCode = "GBP";
         final BigDecimal price = BigDecimal.valueOf(100.00).setScale(2, BigDecimal.ROUND_HALF_UP);
         final boolean active = true;
@@ -141,7 +141,7 @@ public class OffersSingleServiceTest {
         final String offerUri = "/merchandise/" + merchandiseId + "/offer/" + offerId;
 
         final LocalDate expiryDate = LocalDate.now().plusDays(10);
-        final String description = "Active OfferDTO";
+        final String description = "Active Offer";
         final String currencyCode = "GBP";
         final BigDecimal price = BigDecimal.valueOf(100.00).setScale(2, BigDecimal.ROUND_HALF_UP);
         final boolean active = true;

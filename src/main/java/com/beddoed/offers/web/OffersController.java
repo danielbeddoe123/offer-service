@@ -8,6 +8,7 @@ import com.beddoed.offers.service.OfferService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -63,7 +64,11 @@ public class OffersController {
     @RequestMapping(path = CANCEL_OFFER_URI, method = RequestMethod.DELETE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> cancelOffer(@PathVariable("merchandiseId") final UUID merchandiseId, @PathVariable("offerId") final UUID offerId) {
         LOGGER.info("Received request to cancel offer: {}", offerId);
-        offerService.cancelOffer(offerId);
+        final Offer activeOffer = offerService.getActiveOffer(offerId, merchandiseId);
+        if (activeOffer == null) {
+            return notFound().build();
+        }
+        offerService.cancelOffer(offerId, merchandiseId);
         return ResponseEntity.ok().build();
     }
 
@@ -80,7 +85,7 @@ public class OffersController {
     @ExceptionHandler(value = OfferExpiredException.class)
     @ResponseStatus(GONE)
     public void handleOfferExpiredException(OfferExpiredException e) {
-        LOGGER.warn("OfferDTO has expired!", e);
+        LOGGER.warn("Offer has expired!", e);
     }
 
     private ResponseEntity<OfferResource> getOfferResponse(final UUID merchandiseId, final UUID offerId) {

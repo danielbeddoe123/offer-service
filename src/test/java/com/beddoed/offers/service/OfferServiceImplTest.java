@@ -144,7 +144,7 @@ public class OfferServiceImplTest {
         final UUID merchandiseId = randomUUID();
         final UUID merchantId = randomUUID();
         final String currencyCode = "GBP";
-        final boolean active = randomBoolean();
+        final boolean active = true;
         final BigDecimal priceAmount = BigDecimal.TEN;
         final LocalDate expiryDate = LocalDate.now().minusDays(1);
         final String description = randomAlphabetic(10);
@@ -153,7 +153,7 @@ public class OfferServiceImplTest {
 
         // Expect
         expectedException.expect(OfferExpiredException.class);
-        expectedException.expectMessage(String.format("OfferDTO with ID: %s has expired on date: %s", offerId, expiryDate));
+        expectedException.expectMessage(String.format("Offer with ID: %s has expired on date: %s", offerId, expiryDate));
 
         // When
         offerService.getActiveOffer(offerId, merchandiseId);
@@ -163,12 +163,13 @@ public class OfferServiceImplTest {
     public void shouldBeAbleToCancelOffer() {
         // Given
         final UUID offerId = randomUUID();
+        final UUID merchandiseId = randomUUID();
 
         // When
-        offerService.cancelOffer(offerId);
+        offerService.cancelOffer(offerId, merchandiseId);
 
         // Then
-        verify(offerRepository).cancelOffer(offerId);
+        verify(offerRepository).cancelOffer(offerId, merchandiseId);
     }
 
     private com.beddoed.offers.model.Offer getOffer(UUID merchandiseId, UUID merchantId, LocalDate expiryDate, String description, String currencyCode, BigDecimal priceAmount, Boolean active) {

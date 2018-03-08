@@ -34,8 +34,6 @@ public class OfferResource {
     @DecimalMin(value = "0", message = "Price amount must be a positive number")
     private BigDecimal priceAmount;
 
-    private boolean active;
-
     public LocalDate getExpiryDate() {
         return expiryDate;
     }
@@ -66,13 +64,5 @@ public class OfferResource {
 
     public void setPriceAmount(BigDecimal priceAmount) {
         this.priceAmount = priceAmount;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 }

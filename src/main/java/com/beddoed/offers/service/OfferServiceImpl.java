@@ -43,13 +43,13 @@ public class OfferServiceImpl implements OfferService {
         return Optional.of(savedOfferDTO)
                 .filter(offerDTO -> now().isBefore(offerDTO.getExpiryDate()))
                 .map(this::transformToModelRepresentation)
-                .orElseThrow(() -> new OfferExpiredException(format("OfferDTO with ID: %s has expired on date: %s", offerId, savedOfferDTO.getExpiryDate())));
+                .orElseThrow(() -> new OfferExpiredException(format("Offer with ID: %s has expired on date: %s", offerId, savedOfferDTO.getExpiryDate())));
     }
 
     @Override
     @Transactional
-    public void cancelOffer(UUID offerId) {
-        offerRepository.cancelOffer(offerId);
+    public void cancelOffer(UUID offerId, UUID merchandiseId) {
+        offerRepository.cancelOffer(offerId, merchandiseId);
     }
 
     private Offer transformToModelRepresentation(OfferDTO offerDTO) {

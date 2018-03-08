@@ -9,12 +9,12 @@ import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 
 public class OfferResourceDataFactory {
 
-    public static final OfferResource ACTIVE_OFFER_REQUEST = new OfferResource(now().plusWeeks(1).format(ISO_LOCAL_DATE), "Something", "GBP", BigDecimal.TEN, true);
+    public static final OfferResource ACTIVE_OFFER_REQUEST = new OfferResource(now().plusWeeks(1).format(ISO_LOCAL_DATE), "Something", "GBP", BigDecimal.TEN);
 
     private static Gson gson = new GsonBuilder().create();
 
-    public static String toJson(String expiryDate, String description, String currencyCode, BigDecimal amount, boolean active) {
-        final OfferResource offerResource = new OfferResource(expiryDate, description, currencyCode, amount, active);
+    public static String toJson(String expiryDate, String description, String currencyCode, BigDecimal amount) {
+        final OfferResource offerResource = new OfferResource(expiryDate, description, currencyCode, amount);
         return gson.toJson(offerResource);
     }
 
