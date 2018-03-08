@@ -34,6 +34,7 @@ public class OfferRepositoryIntegrationTest {
     @Before
     public void setup() {
         jdbcUtils = new JdbcUtils(jdbcTemplate);
+        jdbcUtils.clearOffers();
     }
 
     @Test

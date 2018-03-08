@@ -50,13 +50,13 @@ public class OffersSingleServiceTest {
     @Before
     public void setup() {
         jdbcUtils = new JdbcUtils(jdbcTemplate);
+        jdbcUtils.clearOffers();
         merchandiseId = UUID.randomUUID();
         setupData();
     }
 
     @After
     public void clearData() {
-        jdbcUtils.clearOffers();
     }
 
     @Test
