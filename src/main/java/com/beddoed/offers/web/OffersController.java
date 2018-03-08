@@ -32,6 +32,7 @@ public class OffersController {
 
     private static final String CREATE_OFFER_URI = "/merchandise/{merchandiseId}/offer";
     private static final String GET_OFFER_URI = CREATE_OFFER_URI + "/{offerId}";
+    private static final String CANCEL_OFFER_URI = CREATE_OFFER_URI + "/{offerId}";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OffersController.class);
 
@@ -57,6 +58,13 @@ public class OffersController {
     public ResponseEntity<OfferResource> getOffer(@PathVariable("merchandiseId") final UUID merchandiseId, @PathVariable("offerId") final UUID offerId) {
         LOGGER.info("Received request to get offer: {}", offerId);
         return getOfferResponse(merchandiseId, offerId);
+    }
+
+    @RequestMapping(path = CANCEL_OFFER_URI, method = RequestMethod.DELETE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> cancelOffer(@PathVariable("merchandiseId") final UUID merchandiseId, @PathVariable("offerId") final UUID offerId) {
+        LOGGER.info("Received request to cancel offer: {}", offerId);
+        offerService.cancelOffer(offerId);
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)

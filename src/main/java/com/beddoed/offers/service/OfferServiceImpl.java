@@ -2,13 +2,12 @@ package com.beddoed.offers.service;
 
 import com.beddoed.offers.data.*;
 import com.beddoed.offers.model.Offer;
-import com.beddoed.offers.model.Price;
 import com.beddoed.offers.model.Price.Builder;
 import com.beddoed.offers.model.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,13 +37,19 @@ public class OfferServiceImpl implements OfferService {
     @Override
     public Offer getActiveOffer(UUID offerId, UUID merchandiseId) {
         final com.beddoed.offers.data.Offer savedOffer = offerRepository.findByOfferIdAndMerchandise_MerchandiseId(offerId, merchandiseId);
-        if (savedOffer == null) {
+        if (savedOffer == null || !savedOffer.getActive()) {
             return null;
         }
         return Optional.of(savedOffer)
                 .filter(offer -> now().isBefore(offer.getExpiryDate()))
                 .map(this::transformToModelRepresentation)
                 .orElseThrow(() -> new OfferExpiredException(format("Offer with ID: %s has expired on date: %s", offerId, savedOffer.getExpiryDate())));
+    }
+
+    @Override
+    @Transactional
+    public void cancelOffer(UUID offerId) {
+        offerRepository.updateOfferAsCancelled(offerId);
     }
 
     private Offer transformToModelRepresentation(com.beddoed.offers.data.Offer offer) {

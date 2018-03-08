@@ -124,7 +124,7 @@ public class OfferServiceImplTest {
         final UUID merchandiseId = randomUUID();
         final UUID merchantId = randomUUID();
         final String currencyCode = "GBP";
-        final boolean active = randomBoolean();
+        final boolean active = true;
         final BigDecimal priceAmount = BigDecimal.TEN;
         final LocalDate expiryDate = LocalDate.now().plusDays(1);
         final String description = randomAlphabetic(10);
@@ -136,6 +136,27 @@ public class OfferServiceImplTest {
 
         // Then
         assertThat(activeOffer).isEqualTo(getOffer(merchandiseId, merchantId, expiryDate, description, currencyCode, priceAmount, active));
+    }
+
+    @Test
+    public void shouldNotReturnInactiveOffer() {
+        // Given
+        final UUID offerId = randomUUID();
+        final UUID merchandiseId = randomUUID();
+        final UUID merchantId = randomUUID();
+        final String currencyCode = "GBP";
+        final boolean active = false;
+        final BigDecimal priceAmount = BigDecimal.TEN;
+        final LocalDate expiryDate = LocalDate.now().plusDays(1);
+        final String description = randomAlphabetic(10);
+        final Offer offerDTO = getOfferDTO(description, active, merchantId, merchandiseId, currencyCode, priceAmount, expiryDate);
+        given(offerRepository.findByOfferIdAndMerchandise_MerchandiseId(offerId, merchandiseId)).willReturn(offerDTO);
+
+        // When
+        final com.beddoed.offers.model.Offer activeOffer = offerService.getActiveOffer(offerId, merchandiseId);
+
+        // Then
+        assertThat(activeOffer).isNull();
     }
 
     @Test

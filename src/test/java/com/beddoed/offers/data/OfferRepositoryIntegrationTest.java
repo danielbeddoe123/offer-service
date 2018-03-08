@@ -1,7 +1,6 @@
 package com.beddoed.offers.data;
 
 import com.beddoed.offers.utils.JdbcUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -153,5 +152,34 @@ public class OfferRepositoryIntegrationTest {
 
         // Then
         assertThat(byOfferIdAndMerchandiseId).isEqualTo(null);
+    }
+
+    @Test
+    public void shouldUpdateOfferToCanncelled() {
+        // Given
+        final UUID merchantId = randomUUID();
+        final Merchant merchant = new Merchant(merchantId);
+        final UUID merchandiseId = randomUUID();
+        final MerchandiseType product = MerchandiseType.PRODUCT;
+        final Merchandise merchandise = new Merchandise(merchandiseId, product, merchant);
+        final String currencyCode = "GBP";
+        final BigDecimal price = BigDecimal.TEN.setScale(2, RoundingMode.HALF_UP);
+        final LocalDate expiryDate = LocalDate.now();
+        final boolean active = true;
+        final String description = randomAlphabetic(10);
+        final UUID offerId = randomUUID();
+        final Offer expected = new Offer(description, merchandise, currencyCode, price, active, expiryDate);
+        expected.setOfferId(offerId);
+
+        jdbcUtils.insertMerchant(merchantId);
+        jdbcUtils.insertMerchandise(merchantId, merchandiseId, product);
+        jdbcUtils.insertOffer(offerId, description, merchandiseId, currencyCode, price, active, expiryDate);
+        assertThat(jdbcUtils.isOfferActive(offerId)).isEqualTo(true);
+
+        // When
+        offerRepository.updateOfferAsCancelled(offerId);
+
+        // Then
+        assertThat(jdbcUtils.isOfferActive(offerId)).isEqualTo(false);
     }
 }

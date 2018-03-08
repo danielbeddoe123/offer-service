@@ -52,6 +52,10 @@ public class JdbcUtils {
         });
     }
 
+    public boolean isOfferActive(UUID offerId) {
+        return jdbcTemplate.queryForObject("select active from offer where offer_Id = ?", Boolean.class, offerId);
+    }
+
     private static UUID getGuidFromByteArray(byte[] bytes) {
         ByteBuffer bb = ByteBuffer.wrap(bytes);
         long high = bb.getLong();

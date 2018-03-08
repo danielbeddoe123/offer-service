@@ -3,16 +3,18 @@ package com.beddoed.offers.web.resource;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.google.gson.GsonBuilder;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 
+@EqualsAndHashCode
 public class OfferResource {
 
-    private final String expiryDate;
-    private final String description;
-    private final String currencyCode;
-    private final BigDecimal priceAmount;
-    private final boolean active;
+    private String expiryDate;
+    private String description;
+    private String currencyCode;
+    private BigDecimal priceAmount;
+    private boolean active;
 
     public OfferResource(String expiryDate, String description, String currencyCode, BigDecimal priceAmount, boolean active) {
         this.expiryDate = expiryDate;
@@ -40,5 +42,32 @@ public class OfferResource {
 
     public boolean isActive() {
         return active;
+    }
+
+    public void setExpiryDate(String expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
+    }
+
+    public void setPriceAmount(BigDecimal priceAmount) {
+        this.priceAmount = priceAmount;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    /**
+     * For framework use only
+     */
+    @Deprecated
+    OfferResource() {
     }
 }
