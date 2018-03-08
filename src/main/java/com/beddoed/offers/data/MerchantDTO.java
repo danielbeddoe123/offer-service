@@ -6,18 +6,20 @@ import lombok.ToString;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.UUID;
 
 @Entity
 @EqualsAndHashCode
 @ToString
-public class Merchant {
+@Table(name = "merchant")
+public class MerchantDTO {
 
     @Id
     @GeneratedValue
     private UUID merchantId;
 
-    public Merchant(UUID merchantId) {
+    public MerchantDTO(UUID merchantId) {
         this.merchantId = merchantId;
     }
 
@@ -33,6 +35,6 @@ public class Merchant {
      * For framework use only
      */
     @Deprecated
-    Merchant() {
+    MerchantDTO() {
     }
 }

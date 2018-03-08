@@ -303,7 +303,7 @@ public class OffersControllerTest {
     public void shouldReturnHttpStatusOfGoneIfOfferHasExpired() throws Exception {
         // Given
         final UUID offerId = randomUUID();
-        doThrow(new OfferExpiredException("Offer has expired")).when(offerService).getActiveOffer(offerId, merchandiseId);
+        doThrow(new OfferExpiredException("OfferDTO has expired")).when(offerService).getActiveOffer(offerId, merchandiseId);
 
         // When / Then
         mvc.perform(get(GET_URI_TEMPLATE, merchandiseId, offerId))

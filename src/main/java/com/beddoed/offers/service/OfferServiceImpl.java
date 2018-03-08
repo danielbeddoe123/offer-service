@@ -29,21 +29,21 @@ public class OfferServiceImpl implements OfferService {
     @Override
     public UUID createOffer(Offer offer) {
         validate(offer);
-        final com.beddoed.offers.data.Offer data = transformToDataRepresentation(offer);
-        final com.beddoed.offers.data.Offer savedOffer = offerRepository.save(data);
-        return savedOffer.getOfferId();
+        final OfferDTO data = transformToDataRepresentation(offer);
+        final OfferDTO savedOfferDTO = offerRepository.save(data);
+        return savedOfferDTO.getOfferId();
     }
 
     @Override
     public Offer getActiveOffer(UUID offerId, UUID merchandiseId) {
-        final com.beddoed.offers.data.Offer savedOffer = offerRepository.findByOfferIdAndMerchandise_MerchandiseId(offerId, merchandiseId);
-        if (savedOffer == null || !savedOffer.getActive()) {
+        final OfferDTO savedOfferDTO = offerRepository.findByOfferIdAndMerchandise_MerchandiseId(offerId, merchandiseId);
+        if (savedOfferDTO == null || !savedOfferDTO.getActive()) {
             return null;
         }
-        return Optional.of(savedOffer)
-                .filter(offer -> now().isBefore(offer.getExpiryDate()))
+        return Optional.of(savedOfferDTO)
+                .filter(offerDTO -> now().isBefore(offerDTO.getExpiryDate()))
                 .map(this::transformToModelRepresentation)
-                .orElseThrow(() -> new OfferExpiredException(format("Offer with ID: %s has expired on date: %s", offerId, savedOffer.getExpiryDate())));
+                .orElseThrow(() -> new OfferExpiredException(format("OfferDTO with ID: %s has expired on date: %s", offerId, savedOfferDTO.getExpiryDate())));
     }
 
     @Override
@@ -52,25 +52,25 @@ public class OfferServiceImpl implements OfferService {
         offerRepository.updateOfferAsCancelled(offerId);
     }
 
-    private Offer transformToModelRepresentation(com.beddoed.offers.data.Offer offer) {
+    private Offer transformToModelRepresentation(OfferDTO offerDTO) {
         return builder()
-                .description(offer.getDescription())
-                .merchandise(toDomain(offer.getMerchandise()))
-                .expiryDate(offer.getExpiryDate())
-                .active(offer.getActive())
+                .description(offerDTO.getDescription())
+                .merchandise(toDomain(offerDTO.getMerchandise()))
+                .expiryDate(offerDTO.getExpiryDate())
+                .active(offerDTO.getActive())
                 .price(Builder.builder()
-                        .currency(offer.getCurrencyCode())
-                        .amount(offer.getPrice())
+                        .currency(offerDTO.getCurrencyCode())
+                        .amount(offerDTO.getPrice())
                         .build())
                 .build();
     }
 
-    private com.beddoed.offers.data.Offer transformToDataRepresentation(Offer offer) {
+    private OfferDTO transformToDataRepresentation(Offer offer) {
         final com.beddoed.offers.model.Merchandise merchandise = offer.getMerchandise();
-        final Merchant merchant = new Merchant(merchandise.getMerchant().getMerchantId());
-        final Merchandise merchandiseData = new Merchandise(merchandise.getMerchandiseId(), getType(merchandise), merchant);
+        final MerchantDTO merchant = new MerchantDTO(merchandise.getMerchant().getMerchantId());
+        final MerchandiseDTO merchandiseDTO = new MerchandiseDTO(merchandise.getMerchandiseId(), getType(merchandise), merchant);
         final String currencyCode = offer.getPrice().getCurrency().getCurrencyCode();
-        return new com.beddoed.offers.data.Offer(offer.getDescription(), merchandiseData, currencyCode, offer.getPrice().getAmount(), offer.getActive(), offer.getExpiryDate());
+        return new OfferDTO(offer.getDescription(), merchandiseDTO, currencyCode, offer.getPrice().getAmount(), offer.getActive(), offer.getExpiryDate());
     }
 
     private void validate(Offer offer) {
@@ -83,6 +83,6 @@ public class OfferServiceImpl implements OfferService {
         if (merchandise instanceof Product) {
             return MerchandiseType.PRODUCT;
         }
-        throw new UnsupportedOperationException("Merchandise type is not supported");
+        throw new UnsupportedOperationException("MerchandiseDTO type is not supported");
     }
 }

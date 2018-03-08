@@ -2,17 +2,10 @@ package com.beddoed.offers.utils;
 
 import com.beddoed.offers.data.MerchandiseType;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 import java.util.UUID;
 
 public class JdbcUtils {
@@ -43,6 +36,10 @@ public class JdbcUtils {
 
     public long countOffers(UUID offerId) {
         return jdbcTemplate.queryForObject("select count(*) from offer where offer_Id = ?", Long.class, offerId);
+    }
+
+    public void clearOffers() {
+        jdbcTemplate.execute("delete from offer");
     }
 
     public UUID getOfferId() {

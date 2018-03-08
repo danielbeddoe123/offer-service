@@ -28,8 +28,8 @@ public class Product extends Merchandise {
         }
 
         public Merchandise build() {
-            requireNonNull(merchandiseId, "Merchandise ID cannot be null");
-            requireNonNull(merchant, "Merchant cannot be null");
+            requireNonNull(merchandiseId, "MerchandiseDTO ID cannot be null");
+            requireNonNull(merchant, "MerchantDTO cannot be null");
             return new Product(merchandiseId, merchant);
         }
     }

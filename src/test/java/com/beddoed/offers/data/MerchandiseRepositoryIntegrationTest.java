@@ -34,19 +34,19 @@ public class MerchandiseRepositoryIntegrationTest {
     public void shouldFindMerchandiseInDatabase() {
         // Given
         final UUID merchantId = UUID.randomUUID();
-        final Merchant merchant = new Merchant(merchantId);
+        final MerchantDTO merchant = new MerchantDTO(merchantId);
         final UUID merchandiseId = UUID.randomUUID();
         final MerchandiseType product = MerchandiseType.PRODUCT;
-        final Merchandise expectedMerchandise = new Merchandise(merchandiseId, product, merchant);
+        final MerchandiseDTO expectedMerchandiseDTO = new MerchandiseDTO(merchandiseId, product, merchant);
 
         jdbcUtils.insertMerchant(merchantId);
         jdbcUtils.insertMerchandise(merchantId, merchandiseId, product);
 
         // When
-        Merchandise savedMerchandise = merchandiseRepository.findOne(merchandiseId);
+        MerchandiseDTO savedMerchandiseDTO = merchandiseRepository.findOne(merchandiseId);
 
         // Then
-        assertThat(savedMerchandise).isNotNull();
-        assertThat(savedMerchandise).isEqualTo(expectedMerchandise);
+        assertThat(savedMerchandiseDTO).isNotNull();
+        assertThat(savedMerchandiseDTO).isEqualTo(expectedMerchandiseDTO);
     }
 }

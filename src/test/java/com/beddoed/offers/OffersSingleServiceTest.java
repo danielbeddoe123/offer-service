@@ -5,6 +5,7 @@ import com.beddoed.offers.data.MerchandiseType;
 import com.beddoed.offers.service.MerchandiseService;
 import com.beddoed.offers.utils.JdbcUtils;
 import com.beddoed.offers.web.resource.OfferResource;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,6 +54,11 @@ public class OffersSingleServiceTest {
         setupData();
     }
 
+    @After
+    public void clearData() {
+        jdbcUtils.clearOffers();
+    }
+
     @Test
     public void shouldBeAbleToCallOfferApiAndCreateAnOffer() throws InterruptedException {
         // Given
@@ -82,7 +88,7 @@ public class OffersSingleServiceTest {
         final String offerUri = "/merchandise/" + merchandiseId + "/offer/" + offerId;
 
         final LocalDate expiryDate = LocalDate.now().plusDays(10);
-        final String description = "Active Offer";
+        final String description = "Active OfferDTO";
         final String currencyCode = "GBP";
         final BigDecimal price = BigDecimal.valueOf(100.00).setScale(2, BigDecimal.ROUND_HALF_UP);
         final boolean active = true;
@@ -111,7 +117,7 @@ public class OffersSingleServiceTest {
         final String offerUri = "/merchandise/" + merchandiseId + "/offer/" + offerId;
 
         final LocalDate expiryDate = LocalDate.now().minusDays(10);
-        final String description = "Active Offer";
+        final String description = "Active OfferDTO";
         final String currencyCode = "GBP";
         final BigDecimal price = BigDecimal.valueOf(100.00).setScale(2, BigDecimal.ROUND_HALF_UP);
         final boolean active = true;
@@ -135,7 +141,7 @@ public class OffersSingleServiceTest {
         final String offerUri = "/merchandise/" + merchandiseId + "/offer/" + offerId;
 
         final LocalDate expiryDate = LocalDate.now().plusDays(10);
-        final String description = "Active Offer";
+        final String description = "Active OfferDTO";
         final String currencyCode = "GBP";
         final BigDecimal price = BigDecimal.valueOf(100.00).setScale(2, BigDecimal.ROUND_HALF_UP);
         final boolean active = true;

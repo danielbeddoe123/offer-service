@@ -1,6 +1,8 @@
 package com.beddoed.offers.service;
 
+import com.beddoed.offers.data.MerchandiseDTO;
 import com.beddoed.offers.data.MerchandiseRepository;
+import com.beddoed.offers.data.MerchantDTO;
 import com.beddoed.offers.model.Merchandise;
 import com.beddoed.offers.model.Merchant;
 import org.junit.Before;
@@ -58,19 +60,19 @@ public class MerchandiseServiceImplTest {
     public void shouldThrowExceptionIfUnsupportedMerchandiseType() {
         // Given
         final UUID merchandiseId = UUID.randomUUID();
-        final com.beddoed.offers.data.Merchant merchant = new com.beddoed.offers.data.Merchant(UUID.randomUUID());
-        given(merchandiseRepository.getOne(merchandiseId)).willReturn(new com.beddoed.offers.data.Merchandise(merchandiseId, SERVICE, merchant));
+        final MerchantDTO merchant = new MerchantDTO(UUID.randomUUID());
+        given(merchandiseRepository.getOne(merchandiseId)).willReturn(new MerchandiseDTO(merchandiseId, SERVICE, merchant));
 
         // Expect
         expectedException.expect(UnsupportedOperationException.class);
-        expectedException.expectMessage("Merchandise type not supported");
+        expectedException.expectMessage("MerchandiseDTO type not supported");
 
         // When
         merchandiseService.getMerchandiseById(merchandiseId);
     }
 
-    private com.beddoed.offers.data.Merchandise getMerchandiseDTO(UUID merchandiseId, UUID merchantId) {
-        return new com.beddoed.offers.data.Merchandise(merchandiseId, PRODUCT, new com.beddoed.offers.data.Merchant(merchantId));
+    private MerchandiseDTO getMerchandiseDTO(UUID merchandiseId, UUID merchantId) {
+        return new MerchandiseDTO(merchandiseId, PRODUCT, new MerchantDTO(merchantId));
     }
 
 }

@@ -1,11 +1,7 @@
 package com.beddoed.offers.service;
 
-import com.beddoed.offers.builders.OfferBuilder;
 import com.beddoed.offers.builders.PriceBuilder;
-import com.beddoed.offers.data.Merchandise;
-import com.beddoed.offers.data.MerchandiseType;
-import com.beddoed.offers.data.Offer;
-import com.beddoed.offers.data.OfferRepository;
+import com.beddoed.offers.data.*;
 import com.beddoed.offers.model.Merchant;
 import com.beddoed.offers.model.Price;
 import com.beddoed.offers.model.Product;
@@ -21,7 +17,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Currency;
-import java.util.Locale;
 import java.util.UUID;
 
 import static com.beddoed.offers.builders.MerchandiseBuilder.merchandiseBuilder;
@@ -60,8 +55,8 @@ public class OfferServiceImplTest {
 
         final UUID randomOfferId = randomUUID();
         final LocalDate expiryDate = LocalDate.now();
-        final Offer expectedOfferWithoutId = getOfferDTO(description, active, merchantId, merchandiseId, currencyCode, amount, expiryDate);
-        final Offer expectedOfferWithId = getOfferDTO(description, active, merchantId, merchandiseId, currencyCode, amount, expiryDate);
+        final OfferDTO expectedOfferWithoutId = getOfferDTO(description, active, merchantId, merchandiseId, currencyCode, amount, expiryDate);
+        final OfferDTO expectedOfferWithId = getOfferDTO(description, active, merchantId, merchandiseId, currencyCode, amount, expiryDate);
         expectedOfferWithId.setOfferId(randomOfferId);
         given(offerRepository.save(expectedOfferWithoutId)).willReturn(expectedOfferWithId);
 
@@ -91,7 +86,7 @@ public class OfferServiceImplTest {
 
         // Expect
         expectedException.expect(UnsupportedOperationException.class);
-        expectedException.expectMessage("Merchandise type is not supported");
+        expectedException.expectMessage("MerchandiseDTO type is not supported");
 
         // When
         offerService.createOffer(offerBuilder().merchandise(unexpectedMerchandiseType).build());
@@ -128,7 +123,7 @@ public class OfferServiceImplTest {
         final BigDecimal priceAmount = BigDecimal.TEN;
         final LocalDate expiryDate = LocalDate.now().plusDays(1);
         final String description = randomAlphabetic(10);
-        final Offer offerDTO = getOfferDTO(description, active, merchantId, merchandiseId, currencyCode, priceAmount, expiryDate);
+        final OfferDTO offerDTO = getOfferDTO(description, active, merchantId, merchandiseId, currencyCode, priceAmount, expiryDate);
         given(offerRepository.findByOfferIdAndMerchandise_MerchandiseId(offerId, merchandiseId)).willReturn(offerDTO);
 
         // When
@@ -149,7 +144,7 @@ public class OfferServiceImplTest {
         final BigDecimal priceAmount = BigDecimal.TEN;
         final LocalDate expiryDate = LocalDate.now().plusDays(1);
         final String description = randomAlphabetic(10);
-        final Offer offerDTO = getOfferDTO(description, active, merchantId, merchandiseId, currencyCode, priceAmount, expiryDate);
+        final OfferDTO offerDTO = getOfferDTO(description, active, merchantId, merchandiseId, currencyCode, priceAmount, expiryDate);
         given(offerRepository.findByOfferIdAndMerchandise_MerchandiseId(offerId, merchandiseId)).willReturn(offerDTO);
 
         // When
@@ -170,12 +165,12 @@ public class OfferServiceImplTest {
         final BigDecimal priceAmount = BigDecimal.TEN;
         final LocalDate expiryDate = LocalDate.now().minusDays(1);
         final String description = randomAlphabetic(10);
-        final Offer offerDTO = getOfferDTO(description, active, merchantId, merchandiseId, currencyCode, priceAmount, expiryDate);
+        final OfferDTO offerDTO = getOfferDTO(description, active, merchantId, merchandiseId, currencyCode, priceAmount, expiryDate);
         given(offerRepository.findByOfferIdAndMerchandise_MerchandiseId(offerId, merchandiseId)).willReturn(offerDTO);
 
         // Expect
         expectedException.expect(OfferExpiredException.class);
-        expectedException.expectMessage(String.format("Offer with ID: %s has expired on date: %s", offerId, expiryDate));
+        expectedException.expectMessage(String.format("OfferDTO with ID: %s has expired on date: %s", offerId, expiryDate));
 
         // When
         offerService.getActiveOffer(offerId, merchandiseId);
@@ -195,8 +190,8 @@ public class OfferServiceImplTest {
 
     }
 
-    private Offer getOfferDTO(String description, boolean active, UUID merchantId, UUID merchandiseId, String currencyCode, BigDecimal amount, LocalDate expiryDate) {
-        return new Offer(description, new Merchandise(merchandiseId, MerchandiseType.PRODUCT, new com.beddoed.offers.data.Merchant(merchantId)),
+    private OfferDTO getOfferDTO(String description, boolean active, UUID merchantId, UUID merchandiseId, String currencyCode, BigDecimal amount, LocalDate expiryDate) {
+        return new OfferDTO(description, new MerchandiseDTO(merchandiseId, MerchandiseType.PRODUCT, new MerchantDTO(merchantId)),
                 currencyCode, amount, active, expiryDate);
     }
 

@@ -6,11 +6,11 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.UUID;
 
-public interface OfferRepository extends JpaRepository<Offer, UUID> {
+public interface OfferRepository extends JpaRepository<OfferDTO, UUID> {
 
-    Offer findByOfferIdAndMerchandise_MerchandiseId(UUID offerId, UUID merchandiseId);
+    OfferDTO findByOfferIdAndMerchandise_MerchandiseId(UUID offerId, UUID merchandiseId);
 
     @Modifying
-    @Query("update Offer o set o.active = false where o.offerId = ?1")
+    @Query("update OfferDTO o set o.active = false where o.offerId = ?1")
     void updateOfferAsCancelled(UUID offerId);
 }

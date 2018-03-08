@@ -80,7 +80,7 @@ public class OffersController {
     @ExceptionHandler(value = OfferExpiredException.class)
     @ResponseStatus(GONE)
     public void handleOfferExpiredException(OfferExpiredException e) {
-        LOGGER.warn("Offer has expired!", e);
+        LOGGER.warn("OfferDTO has expired!", e);
     }
 
     private ResponseEntity<OfferResource> getOfferResponse(final UUID merchandiseId, final UUID offerId) {

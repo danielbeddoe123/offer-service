@@ -3,10 +3,7 @@ package com.beddoed.offers.data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -14,7 +11,8 @@ import java.util.UUID;
 @Entity
 @EqualsAndHashCode
 @ToString
-public class Offer {
+@Table(name = "offer")
+public class OfferDTO {
 
     @Id
     @GeneratedValue
@@ -23,7 +21,7 @@ public class Offer {
     private String description;
 
     @ManyToOne
-    private Merchandise merchandise;
+    private MerchandiseDTO merchandise;
 
     private String currencyCode;
 
@@ -33,7 +31,7 @@ public class Offer {
 
     private LocalDate expiryDate;
 
-    public Offer(String description, Merchandise merchandise, String currencyCode, BigDecimal price, Boolean active, LocalDate expiryDate) {
+    public OfferDTO(String description, MerchandiseDTO merchandise, String currencyCode, BigDecimal price, Boolean active, LocalDate expiryDate) {
         this.description = description;
         this.merchandise = merchandise;
         this.currencyCode = currencyCode;
@@ -66,11 +64,11 @@ public class Offer {
         this.active = active;
     }
 
-    public Merchandise getMerchandise() {
+    public MerchandiseDTO getMerchandise() {
         return merchandise;
     }
 
-    public void setMerchandise(Merchandise merchandise) {
+    public void setMerchandise(MerchandiseDTO merchandise) {
         this.merchandise = merchandise;
     }
 
@@ -102,6 +100,6 @@ public class Offer {
      * For framework use only
      */
     @Deprecated
-    Offer() {
+    OfferDTO() {
     }
 }

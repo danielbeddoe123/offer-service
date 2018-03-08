@@ -40,10 +40,10 @@ public class OfferRepositoryIntegrationTest {
     public void shouldSaveAndFindOfferInDatabase() {
         // Given
         final UUID merchantId = randomUUID();
-        final Merchant merchant = new Merchant(merchantId);
+        final MerchantDTO merchant = new MerchantDTO(merchantId);
         final UUID merchandiseId = randomUUID();
         final MerchandiseType product = MerchandiseType.PRODUCT;
-        final Merchandise merchandise = new Merchandise(merchandiseId, product, merchant);
+        final MerchandiseDTO merchandiseDTO = new MerchandiseDTO(merchandiseId, product, merchant);
         final String currencyCode = "GBP";
         final BigDecimal price = BigDecimal.TEN.setScale(2, RoundingMode.HALF_UP);
         final LocalDate expiryDate = LocalDate.now();
@@ -51,26 +51,26 @@ public class OfferRepositoryIntegrationTest {
         jdbcUtils.insertMerchant(merchantId);
         jdbcUtils.insertMerchandise(merchantId, merchandiseId, product);
 
-        final Offer offer = new Offer("test", merchandise, currencyCode, price, true, expiryDate);
+        final OfferDTO offerDTO = new OfferDTO("test", merchandiseDTO, currencyCode, price, true, expiryDate);
 
         // When
-        Offer savedOffer = offerRepository.save(offer);
+        OfferDTO savedOfferDTO = offerRepository.save(offerDTO);
 
         // Then
-        assertThat(savedOffer.getOfferId()).isNotNull();
-        Offer foundOffer = offerRepository.findOne(savedOffer.getOfferId());
+        assertThat(savedOfferDTO.getOfferId()).isNotNull();
+        OfferDTO foundOffer = offerRepository.findOne(savedOfferDTO.getOfferId());
         assertThat(foundOffer).isNotNull();
-        assertThat(savedOffer).isEqualTo(foundOffer);
+        assertThat(savedOfferDTO).isEqualTo(foundOffer);
     }
 
     @Test
     public void shouldAllowMultipleOffersToBeSavedAgainstMerchandise() {
         // Given
         final UUID merchantId = randomUUID();
-        final Merchant merchant = new Merchant(merchantId);
+        final MerchantDTO merchant = new MerchantDTO(merchantId);
         final UUID merchandiseId = randomUUID();
         final MerchandiseType product = MerchandiseType.PRODUCT;
-        final Merchandise merchandise = new Merchandise(merchandiseId, product, merchant);
+        final MerchandiseDTO merchandiseDTO = new MerchandiseDTO(merchandiseId, product, merchant);
         final String currencyCode = "GBP";
         final BigDecimal price = BigDecimal.TEN.setScale(2, RoundingMode.HALF_UP);
         final BigDecimal price2 = BigDecimal.valueOf(20.00).setScale(2, RoundingMode.HALF_UP);
@@ -79,42 +79,42 @@ public class OfferRepositoryIntegrationTest {
         jdbcUtils.insertMerchant(merchantId);
         jdbcUtils.insertMerchandise(merchantId, merchandiseId, product);
 
-        final Offer offer1 = new Offer("test", merchandise, currencyCode, price, true, expiryDate);
-        final Offer offer2 = new Offer("test2", merchandise, currencyCode, price2, true, expiryDate);
+        final OfferDTO offerDTO1 = new OfferDTO("test", merchandiseDTO, currencyCode, price, true, expiryDate);
+        final OfferDTO offerDTO2 = new OfferDTO("test2", merchandiseDTO, currencyCode, price2, true, expiryDate);
 
         // When
-        Offer savedOffer1 = offerRepository.save(offer1);
-        Offer savedOffer2 = offerRepository.save(offer2);
+        OfferDTO savedOfferDTO1 = offerRepository.save(offerDTO1);
+        OfferDTO savedOfferDTO2 = offerRepository.save(offerDTO2);
 
         // Then
         assertThat(offerRepository.count()).isEqualTo(2);
 
-        assertThat(savedOffer1.getOfferId()).isNotNull();
-        Offer foundOffer1 = offerRepository.findOne(savedOffer1.getOfferId());
+        assertThat(savedOfferDTO1.getOfferId()).isNotNull();
+        OfferDTO foundOffer1 = offerRepository.findOne(savedOfferDTO1.getOfferId());
         assertThat(foundOffer1).isNotNull();
-        assertThat(savedOffer1).isEqualTo(foundOffer1);
+        assertThat(savedOfferDTO1).isEqualTo(foundOffer1);
 
-        assertThat(savedOffer2.getOfferId()).isNotNull();
-        Offer foundOffer2 = offerRepository.findOne(savedOffer2.getOfferId());
+        assertThat(savedOfferDTO2.getOfferId()).isNotNull();
+        OfferDTO foundOffer2 = offerRepository.findOne(savedOfferDTO2.getOfferId());
         assertThat(foundOffer2).isNotNull();
-        assertThat(savedOffer2).isEqualTo(foundOffer2);
+        assertThat(savedOfferDTO2).isEqualTo(foundOffer2);
     }
 
     @Test
     public void shouldFindByOfferAndMerchandiseId() {
         // Given
         final UUID merchantId = randomUUID();
-        final Merchant merchant = new Merchant(merchantId);
+        final MerchantDTO merchant = new MerchantDTO(merchantId);
         final UUID merchandiseId = randomUUID();
         final MerchandiseType product = MerchandiseType.PRODUCT;
-        final Merchandise merchandise = new Merchandise(merchandiseId, product, merchant);
+        final MerchandiseDTO merchandiseDTO = new MerchandiseDTO(merchandiseId, product, merchant);
         final String currencyCode = "GBP";
         final BigDecimal price = BigDecimal.TEN.setScale(2, RoundingMode.HALF_UP);
         final LocalDate expiryDate = LocalDate.now();
         final boolean active = randomBoolean();
         final String description = randomAlphabetic(10);
         final UUID offerId = randomUUID();
-        final Offer expected = new Offer(description, merchandise, currencyCode, price, active, expiryDate);
+        final OfferDTO expected = new OfferDTO(description, merchandiseDTO, currencyCode, price, active, expiryDate);
         expected.setOfferId(offerId);
 
         jdbcUtils.insertMerchant(merchantId);
@@ -122,7 +122,7 @@ public class OfferRepositoryIntegrationTest {
         jdbcUtils.insertOffer(offerId, description, merchandiseId, currencyCode, price, active, expiryDate);
 
         // When
-        final Offer byOfferIdAndMerchandiseId = offerRepository.findByOfferIdAndMerchandise_MerchandiseId(offerId, merchandiseId);
+        final OfferDTO byOfferIdAndMerchandiseId = offerRepository.findByOfferIdAndMerchandise_MerchandiseId(offerId, merchandiseId);
 
         // Then
         assertThat(byOfferIdAndMerchandiseId).isEqualTo(expected);
@@ -148,7 +148,7 @@ public class OfferRepositoryIntegrationTest {
         jdbcUtils.insertOffer(offerId, description, merchandiseId, currencyCode, price, active, expiryDate);
 
         // When
-        final Offer byOfferIdAndMerchandiseId = offerRepository.findByOfferIdAndMerchandise_MerchandiseId(offerId, otherMerchandiseId);
+        final OfferDTO byOfferIdAndMerchandiseId = offerRepository.findByOfferIdAndMerchandise_MerchandiseId(offerId, otherMerchandiseId);
 
         // Then
         assertThat(byOfferIdAndMerchandiseId).isEqualTo(null);
@@ -158,17 +158,17 @@ public class OfferRepositoryIntegrationTest {
     public void shouldUpdateOfferToCanncelled() {
         // Given
         final UUID merchantId = randomUUID();
-        final Merchant merchant = new Merchant(merchantId);
+        final MerchantDTO merchant = new MerchantDTO(merchantId);
         final UUID merchandiseId = randomUUID();
         final MerchandiseType product = MerchandiseType.PRODUCT;
-        final Merchandise merchandise = new Merchandise(merchandiseId, product, merchant);
+        final MerchandiseDTO merchandiseDTO = new MerchandiseDTO(merchandiseId, product, merchant);
         final String currencyCode = "GBP";
         final BigDecimal price = BigDecimal.TEN.setScale(2, RoundingMode.HALF_UP);
         final LocalDate expiryDate = LocalDate.now();
         final boolean active = true;
         final String description = randomAlphabetic(10);
         final UUID offerId = randomUUID();
-        final Offer expected = new Offer(description, merchandise, currencyCode, price, active, expiryDate);
+        final OfferDTO expected = new OfferDTO(description, merchandiseDTO, currencyCode, price, active, expiryDate);
         expected.setOfferId(offerId);
 
         jdbcUtils.insertMerchant(merchantId);

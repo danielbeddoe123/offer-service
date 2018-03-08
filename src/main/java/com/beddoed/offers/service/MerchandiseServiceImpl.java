@@ -1,9 +1,8 @@
 package com.beddoed.offers.service;
 
+import com.beddoed.offers.data.MerchandiseDTO;
 import com.beddoed.offers.data.MerchandiseRepository;
-import com.beddoed.offers.data.Merchant;
 import com.beddoed.offers.model.Merchandise;
-import com.beddoed.offers.model.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +22,7 @@ public class MerchandiseServiceImpl implements MerchandiseService {
 
     @Override
     public Merchandise getMerchandiseById(UUID merchandiseId) {
-        final com.beddoed.offers.data.Merchandise merchandiseDTO = merchandiseRepository.getOne(merchandiseId);
+        final MerchandiseDTO merchandiseDTO = merchandiseRepository.getOne(merchandiseId);
         return toDomain(merchandiseDTO);
     }
 }

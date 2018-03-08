@@ -9,7 +9,8 @@ import java.util.UUID;
 @Entity
 @EqualsAndHashCode
 @ToString
-public class Merchandise {
+@Table(name = "merchandise")
+public class MerchandiseDTO {
 
     @Id
     @GeneratedValue
@@ -19,9 +20,9 @@ public class Merchandise {
     private MerchandiseType merchandiseType;
 
     @ManyToOne
-    private Merchant merchant;
+    private MerchantDTO merchant;
 
-    public Merchandise(UUID merchandiseId, MerchandiseType merchandiseType, Merchant merchant) {
+    public MerchandiseDTO(UUID merchandiseId, MerchandiseType merchandiseType, MerchantDTO merchant) {
         this.merchandiseId = merchandiseId;
         this.merchandiseType = merchandiseType;
         this.merchant = merchant;
@@ -35,7 +36,7 @@ public class Merchandise {
         return merchandiseType;
     }
 
-    public Merchant getMerchant() {
+    public MerchantDTO getMerchant() {
         return merchant;
     }
 
@@ -47,7 +48,7 @@ public class Merchandise {
         this.merchandiseType = merchandiseType;
     }
 
-    public void setMerchant(Merchant merchant) {
+    public void setMerchant(MerchantDTO merchant) {
         this.merchant = merchant;
     }
 
@@ -55,6 +56,6 @@ public class Merchandise {
      * For framework use only
      */
     @Deprecated
-    Merchandise() {
+    MerchandiseDTO() {
     }
 }
