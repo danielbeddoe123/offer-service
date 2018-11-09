@@ -74,6 +74,7 @@
 
 
     <build>
+        <finalName>${project.artifactId}_${project.version}</finalName>
 
         <resources>
             <resource>
