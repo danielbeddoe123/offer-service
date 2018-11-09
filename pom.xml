@@ -119,9 +119,9 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>com.beddoed</groupId>
-                                    <artifactId>offer-service</artifactId>
-                                    <version>1.0-SNAPSHOT</version>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>${project.artifactId}</artifactId>
+                                    <version>${project.version}</version>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
                                     <destFileName>${build.finalName}.jar</destFileName>
