@@ -2,8 +2,8 @@
 
 set -e
 
-if [ \( "$1" = "upgrade" -o "$1" = "remove" \) -a -e /var/run/${build.finalName}/${build.finalName}.pid ]; then
-  service ${build.finalName} stop
+if [ \( "$1" = "upgrade" -o "$1" = "remove" \) -a -e /var/run/[[artifactId]]_[[version]]/[[artifactId]]_[[version]].pid ]; then
+  service [[artifactId]]_[[version]] stop
 fi
 
 exit 0

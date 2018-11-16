@@ -2,7 +2,7 @@
 
 set -e
 
-update-rc.d ${build.finalName} defaults
-service ${build.finalName} start
+update-rc.d [[artifactId]]_[[version]] defaults
+service [[artifactId]]_[[version]] start
 
 exit 0

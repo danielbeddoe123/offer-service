@@ -2,10 +2,10 @@
 
 set -e
 
-update-rc.d -f ${build.finalName} remove
+update-rc.d -f [[artifactId]]_[[version]] remove
 
-if [ -e /var/log/${build.finalName}.log ]; then
-  rm /var/log/${build.finalName}.log
+if [ -e /var/log/[[artifactId]]_[[version]].log ]; then
+  rm /var/log/[[artifactId]]_[[version]].log
 fi
 
 exit 0
